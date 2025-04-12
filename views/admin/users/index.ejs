@@ -1,0 +1,154 @@
+<%- include('../../partials/admin-header') %>
+
+<div class="admin-container">
+  <%- include('../../partials/admin-sidebar', { active: 'users' }) %>
+  
+  <main class="admin-content">
+    <div class="admin-table-actions">
+      <div class="admin-table-title">
+        <h2>Manajemen Pengguna</h2>
+      </div>
+      
+      <div class="action-btns">
+        <a href="/admin/users/add" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Tambah Pengguna
+        </a>
+      </div>
+    </div>
+    
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+    
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Nama Lengkap</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Tanggal Daftar</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (users && users.length > 0) { %>
+            <% users.forEach(user => { %>
+              <tr>
+                <td><%= user.username %></td>
+                <td><%= user.email %></td>
+                <td><%= user.fullName || '-' %></td>
+                <td>
+                  <span class="badge <%= user.role === 'admin' ? 'badge-admin' : 'badge-user' %>">
+                    <%= user.role %>
+                  </span>
+                </td>
+                <td>
+                  <span class="badge <%= user.isActive ? 'badge-active' : 'badge-inactive' %>">
+                    <%= user.isActive ? 'Aktif' : 'Nonaktif' %>
+                  </span>
+                </td>
+                <td><%= new Date(user.createdAt).toLocaleDateString('id-ID') %></td>
+                <td class="table-action-cell">
+                  <a href="/admin/users/edit/<%= user._id %>" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <% if (user._id.toString() !== currentUser.id) { %>
+                    <a href="/admin/users/delete/<%= user._id %>" class="btn btn-sm btn-danger delete-btn">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="no-data">Belum ada pengguna</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    
+    <% if (totalPages > 1) { %>
+      <div class="admin-pagination">
+        <% for(let i = 1; i <= totalPages; i++) { %>
+          <div class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a href="/admin/users?page=<%= i %>" class="page-link"><%= i %></a>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+  </main>
+</div>
+
+<style>
+  .badge-admin {
+    background-color: #f0f7ff;
+    color: var(--admin-primary);
+  }
+  
+  .badge-user {
+    background-color: #f5f5f8;
+    color: #666;
+  }
+  
+  .badge-active {
+    background-color: #f0fff4;
+    color: #10b981;
+  }
+  
+  .badge-inactive {
+    background-color: #fff5f5;
+    color: #ef4444;
+  }
+  
+  .admin-table-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .admin-table th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .admin-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+  
+  .no-data {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+    font-style: italic;
+  }
+</style>
+
+<%- include('../../partials/admin-footer') %>

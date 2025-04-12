@@ -1,0 +1,148 @@
+<div class="user-dropdown" id="userDropdown">
+    <div class="user-dropdown-header">
+      <% if (user.profileImage) { %>
+        <img src="<%= user.profileImage %>" alt="<%= user.username %>" class="user-avatar">
+      <% } else { %>
+        <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+      <% } %>
+      <div class="user-info">
+        <h4><%= user.fullName || user.username %></h4>
+        <p><%= user.email %></p>
+      </div>
+    </div>
+    
+    <div class="user-dropdown-content">
+      <a href="/auth/profile" class="dropdown-item">
+        <i class="fas fa-user"></i>
+        <span>Profil Saya</span>
+      </a>
+      
+      <a href="/orders" class="dropdown-item">
+        <i class="fas fa-shopping-bag"></i>
+        <span>Pesanan Saya</span>
+      </a>
+      
+      <% if (user.role === 'admin') { %>
+        <a href="/admin/dashboard" class="dropdown-item">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard Admin</span>
+        </a>
+      <% } %>
+      
+      <div class="dropdown-divider"></div>
+      
+      <a href="/auth/logout" class="dropdown-item logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+  
+  <style>
+    .user-dropdown {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      width: 280px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .user-dropdown.active {
+      display: block;
+    }
+    
+    .user-dropdown-header {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background-color: #f8f8f8;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 600;
+      margin-right: 12px;
+    }
+    
+    .user-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 3px 0;
+    }
+    
+    .user-info p {
+      font-size: 12px;
+      color: #666;
+      margin: 0;
+    }
+    
+    .user-dropdown-content {
+      padding: 8px 0;
+    }
+    
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      color: #333;
+      transition: background-color 0.2s;
+      text-decoration: none;
+    }
+    
+    .dropdown-item:hover {
+      background-color: #f5f5f8;
+    }
+    
+    .dropdown-item i {
+      width: 20px;
+      margin-right: 10px;
+      font-size: 16px;
+      color: #555;
+    }
+    
+    .dropdown-item.logout i {
+      color: #e74c3c;
+    }
+    
+    .dropdown-divider {
+      height: 1px;
+      background-color: #eee;
+      margin: 5px 0;
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const userProfile = document.querySelector('.user-profile');
+      const userDropdown = document.getElementById('userDropdown');
+      
+      if (userProfile && userDropdown) {
+        userProfile.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          userDropdown.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!userDropdown.contains(e.target) && !userProfile.contains(e.target)) {
+            userDropdown.classList.remove('active');
+          }
+        });
+      }
+    });
+  </script>

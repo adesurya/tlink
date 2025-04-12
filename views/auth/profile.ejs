@@ -1,0 +1,314 @@
+<div class="profile-container">
+    <div class="profile-header">
+      <h1>Profil Saya</h1>
+      <p>Kelola informasi profil Anda</p>
+    </div>
+    
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+    
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <%= success %>
+      </div>
+    <% } %>
+    
+    <div class="profile-content">
+      <div class="profile-sidebar">
+        <div class="profile-image">
+          <% if (user.profileImage) { %>
+            <img src="<%= user.profileImage %>" alt="<%= user.username %>">
+          <% } else { %>
+            <div class="profile-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+          <% } %>
+        </div>
+        
+        <div class="profile-info">
+          <h2><%= user.fullName || user.username %></h2>
+          <p class="profile-role"><%= user.role === 'admin' ? 'Administrator' : 'Affiliate Member' %></p>
+          <p class="profile-joined">Bergabung: <%= new Date(user.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+        </div>
+        
+        <div class="affiliate-info">
+          <h3>Informasi Affiliate</h3>
+          <div class="affiliate-code">
+            <span>Kode Affiliate:</span>
+            <strong><%= user.affiliateCode || 'Belum tersedia' %></strong>
+          </div>
+        </div>
+      </div>
+      
+      <div class="profile-form-container">
+        <h3>Edit Profil</h3>
+        
+        <form action="/auth/profile" method="POST" class="profile-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="<%= user.username %>" disabled>
+            <small>Username tidak dapat diubah</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+            <small>Email tidak dapat diubah</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="fullName">Nama Lengkap</label>
+            <input type="text" id="fullName" name="fullName" value="<%= user.fullName || '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Nomor Telepon</label>
+            <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>">
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Simpan Perubahan</button>
+          </div>
+        </form>
+        
+        <div class="password-change">
+          <h3>Ubah Password</h3>
+          <a href="/auth/change-password" class="btn-secondary">Ubah Password</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .profile-container {
+      padding: 20px 15px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .profile-header {
+      margin-bottom: 20px;
+    }
+    
+    .profile-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .profile-header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .alert-error {
+      background-color: #ffe6e6;
+      color: #e74c3c;
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .alert-success {
+      background-color: #e6f7e6;
+      color: #27ae60;
+      border-left: 4px solid #27ae60;
+    }
+    
+    .profile-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .profile-sidebar {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .profile-image {
+      margin-bottom: 15px;
+    }
+    
+    .profile-image img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 600;
+      margin: 0 auto;
+    }
+    
+    .profile-info h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .profile-role {
+      font-size: 14px;
+      color: var(--secondary-color);
+      margin-bottom: 5px;
+    }
+    
+    .profile-joined {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .affiliate-info {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      text-align: left;
+    }
+    
+    .affiliate-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .affiliate-code {
+      background-color: #f5f5f8;
+      padding: 12px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+    
+    .affiliate-code strong {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .profile-form-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    
+    .profile-form-container h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    
+    .profile-form .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .profile-form label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    
+    .profile-form input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .profile-form input:focus {
+      border-color: var(--secondary-color);
+      outline: none;
+    }
+    
+    .profile-form input:disabled {
+      background-color: #f5f5f8;
+      cursor: not-allowed;
+    }
+    
+    .profile-form small {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .form-actions {
+      margin-top: 25px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background-color: #d02f50;
+    }
+    
+    .password-change {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    
+    .btn-secondary {
+      display: inline-block;
+      background-color: #f5f5f8;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #eaeaf0;
+    }
+    
+    @media (min-width: 768px) {
+      .profile-content {
+        flex-direction: row;
+      }
+      
+      .profile-sidebar {
+        flex: 0 0 300px;
+      }
+      
+      .profile-form-container {
+        flex: 1;
+      }
+    }

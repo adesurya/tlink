@@ -1,0 +1,152 @@
+<% 
+  const active = 'for-you';
+%>
+
+<div class="home-container">
+  <section class="featured-banner">
+    <div class="featured-content">
+      <h2>1 Minute To Boost Your Sales</h2>
+      <p>Right Product, High Commission</p>
+      <div class="view-count">
+        <span class="view-icon"><i class="fas fa-eye"></i></span>
+        <span class="view-number">68.9k View</span>
+      </div>
+      <a href="#product-categories" class="view-now-btn">View now <i class="fas fa-chevron-right"></i></a>
+    </div>
+  </section>
+  
+  <section id="product-categories" class="product-categories">
+    <div class="category-items">
+      <a href="/products/category/text" class="category-item">
+        <div class="category-icon">
+          <i class="fas fa-comment-alt"></i>
+        </div>
+        <span>Text Product</span>
+      </a>
+      
+      <a href="/products/viral" class="category-item">
+        <div class="category-icon hot">
+          <i class="fas fa-video"></i>
+        </div>
+        <span>Video Viral</span>
+      </a>
+      
+      <a href="/products/category/live" class="category-item">
+        <div class="category-icon">
+          <i class="fas fa-broadcast-tower"></i>
+        </div>
+        <span>Live Stream Viral</span>
+      </a>
+      
+      <a href="/products/top-rated" class="category-item">
+        <div class="category-icon">
+          <i class="fas fa-star"></i>
+        </div>
+        <span>Top Rating</span>
+      </a>
+      
+      <a href="/faq" class="category-item">
+        <div class="category-icon">
+          <i class="fas fa-question-circle"></i>
+        </div>
+        <span>FAQ</span>
+      </a>
+    </div>
+  </section>
+  
+  <section class="viral-product">
+    <div class="section-header">
+      <h2>Daily Viral Product</h2>
+      <a href="/products/viral" class="view-all">View All</a>
+    </div>
+    
+    <div class="product-grid">
+      <% viralProducts.forEach(product => { %>
+        <div class="product-card">
+          <div class="product-image">
+            <img src="<%= product.image %>" alt="<%= product.name %>">
+            <% if (product.discountPercentage > 0) { %>
+              <span class="discount-badge">-<%= product.discountPercentage %>%</span>
+            <% } %>
+            <div class="viral-badge">Viral New</div>
+          </div>
+          <div class="product-info">
+            <h3 class="product-name"><%= product.name %></h3>
+            <div class="product-stats">
+              <span class="product-views"><%= (product.views / 1000).toFixed(1) %>k</span>
+              <span class="product-likes"><%= (product.views * 0.15).toFixed(1) %>k</span>
+            </div>
+            <a href="/products/<%= product._id %>" class="view-product-btn">View Product</a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+  
+  <section class="easy-to-sell">
+    <div class="section-header">
+      <h2>Easy to Sell</h2>
+      <a href="/products?sort=easy" class="view-all">View All</a>
+    </div>
+    
+    <div class="product-grid small-grid">
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/sample1.jpg" alt="Product 1">
+          <div class="price-tag">Rp 1.000.000</div>
+        </div>
+      </div>
+      
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/sample2.jpg" alt="Product 2">
+          <div class="price-tag">Rp 2.500.000</div>
+        </div>
+      </div>
+      
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/sample3.jpg" alt="Product 3">
+          <div class="price-tag">Rp 4.000.000</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="tiktok-event">
+    <div class="section-header">
+      <h2>TikTok Event</h2>
+      <a href="/products/tiktok" class="view-all">View All</a>
+    </div>
+    
+    <div class="product-grid small-grid">
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/tiktok1.jpg" alt="TikTok Product 1">
+          <div class="discount-badge">20% ↓</div>
+        </div>
+      </div>
+      
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/tiktok2.jpg" alt="TikTok Product 2">
+          <div class="discount-badge">20% ↓</div>
+        </div>
+      </div>
+      
+      <div class="product-card small-card">
+        <div class="product-image">
+          <img src="/images/products/tiktok3.jpg" alt="TikTok Product 3">
+          <div class="discount-badge">20% ↓</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="campaign-tabs">
+    <div class="tabs-header">
+      <button class="tab-btn active">Mega Campaign</button>
+      <button class="tab-btn">Endorsement</button>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,161 @@
+<div class="products-container">
+    <div class="filters-container">
+      <h2>Filter Products</h2>
+      
+      <form action="/products" method="GET" class="filter-form">
+        <% if (query.search) { %>
+          <input type="hidden" name="search" value="<%= query.search %>">
+        <% } %>
+        
+        <div class="filter-group">
+          <h3>Categories</h3>
+          <ul class="category-list">
+            <li>
+              <label>
+                <input type="radio" name="category" value="" <%= !query.category ? 'checked' : '' %>>
+                <span>All Categories</span>
+              </label>
+            </li>
+            
+            <% categories.forEach(category => { %>
+              <li>
+                <label>
+                  <input type="radio" name="category" value="<%= category._id %>" <%= query.category === category._id.toString() ? 'checked' : '' %>>
+                  <span><%= category.name %></span>
+                </label>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+        
+        <div class="filter-group">
+          <h3>Product Type</h3>
+          <ul class="type-list">
+            <li>
+              <label>
+                <input type="checkbox" name="isViral" value="true" <%= query.isViral === 'true' ? 'checked' : '' %>>
+                <span>Viral Products</span>
+              </label>
+            </li>
+            
+            <li>
+              <label>
+                <input type="checkbox" name="isHot" value="true" <%= query.isHot === 'true' ? 'checked' : '' %>>
+                <span>Hot Products</span>
+              </label>
+            </li>
+            
+            <li>
+              <label>
+                <input type="checkbox" name="isTopRated" value="true" <%= query.isTopRated === 'true' ? 'checked' : '' %>>
+                <span>Top Rated Products</span>
+              </label>
+            </li>
+            
+            <li>
+              <label>
+                <input type="checkbox" name="isFeatured" value="true" <%= query.isFeatured === 'true' ? 'checked' : '' %>>
+                <span>Featured Products</span>
+              </label>
+            </li>
+          </ul>
+        </div>
+        
+        <button type="submit" class="apply-filter-btn">Apply Filters</button>
+      </form>
+    </div>
+    
+    <div class="products-grid-container">
+      <div class="products-header">
+        <h1><%= title %></h1>
+        <div class="products-count">
+          <span><%= total %> products found</span>
+        </div>
+      </div>
+      
+      <% if (products.length === 0) { %>
+        <div class="no-products">
+          <p>No products found. Try adjusting your filters or search criteria.</p>
+        </div>
+      <% } else { %>
+        <div class="products-grid">
+          <% products.forEach(product => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <a href="/products/<%= product._id %>">
+                  <img src="<%= product.image %>" alt="<%= product.name %>">
+                </a>
+                
+                <% if (product.discountPercentage > 0) { %>
+                  <span class="discount-badge">-<%= product.discountPercentage %>%</span>
+                <% } %>
+                
+                <% if (product.isViral) { %>
+                  <div class="viral-badge">Viral</div>
+                <% } %>
+                
+                <% if (product.isHot) { %>
+                  <div class="hot-badge">Hot</div>
+                <% } %>
+              </div>
+              
+              <div class="product-info">
+                <h3 class="product-name">
+                  <a href="/products/<%= product._id %>"><%= product.name %></a>
+                </h3>
+                
+                <div class="product-stats">
+                  <span class="product-views"><i class="fas fa-eye"></i> <%= (product.views / 1000).toFixed(1) %>k</span>
+                  <div class="product-rating">
+                    <% for(let i = 0; i < 5; i++) { %>
+                      <i class="<%= i < Math.round(product.ratings) ? 'fas' : 'far' %> fa-star"></i>
+                    <% } %>
+                  </div>
+                </div>
+                
+                <div class="product-price">
+                  <% if (product.discountPrice > 0) { %>
+                    <span class="original-price">$<%= product.price.toFixed(2) %></span>
+                    <span class="discount-price">$<%= product.discountPrice.toFixed(2) %></span>
+                  <% } else { %>
+                    <span class="current-price">$<%= product.price.toFixed(2) %></span>
+                  <% } %>
+                </div>
+                
+                <div class="product-commission">
+                  <span>Commission: <%= product.commission %>%</span>
+                </div>
+                
+                <div class="product-actions">
+                  <a href="/products/<%= product._id %>" class="view-btn">View Details</a>
+                  <a href="/products/<%= product._id %>/affiliate" class="buy-btn">Buy Now</a>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+        
+        <% if (totalPages > 1) { %>
+          <div class="pagination">
+            <% if (currentPage > 1) { %>
+              <a href="?page=<%= currentPage - 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="prev-page">
+                <i class="fas fa-chevron-left"></i> Previous
+              </a>
+            <% } %>
+            
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <a href="?page=<%= i %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="page-number <%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+              </a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+              <a href="?page=<%= currentPage + 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="next-page">
+                Next <i class="fas fa-chevron-right"></i>
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+      <% } %>
+    </div>
+  </div>

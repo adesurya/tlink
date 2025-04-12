@@ -1,0 +1,61 @@
+<div class="error-container">
+    <div class="error-content">
+      <h1>500</h1>
+      <h2>Kesalahan Server</h2>
+      <p>Mohon maaf, telah terjadi kesalahan pada server kami. Silakan coba lagi beberapa saat.</p>
+      <div class="error-actions">
+        <a href="/" class="back-home-btn">
+          <i class="fas fa-home"></i> Kembali ke Beranda
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .error-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      padding: 20px;
+    }
+    
+    .error-content {
+      text-align: center;
+      max-width: 500px;
+    }
+    
+    .error-content h1 {
+      font-size: 80px;
+      color: #ff5252;
+      margin-bottom: 10px;
+    }
+    
+    .error-content h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    
+    .error-content p {
+      color: var(--dark-gray);
+      margin-bottom: 25px;
+    }
+    
+    .back-home-btn {
+      display: inline-block;
+      background-color: var(--secondary-color);
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    
+    .back-home-btn i {
+      margin-right: 5px;
+    }
+    
+    .back-home-btn:hover {
+      background-color: #4060e0;
+    }
+  </style>

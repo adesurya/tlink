@@ -1,0 +1,45 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sidebar toggle for mobile
+      const sidebarToggle = document.getElementById('sidebarToggle');
+      const adminSidebar = document.getElementById('adminSidebar');
+      
+      if (sidebarToggle && adminSidebar) {
+        sidebarToggle.addEventListener('click', function() {
+          adminSidebar.classList.toggle('active');
+        });
+      }
+      
+      // User dropdown
+      const adminUserDropdown = document.getElementById('adminUserDropdown');
+      const adminDropdownMenu = document.getElementById('adminDropdownMenu');
+      
+      if (adminUserDropdown && adminDropdownMenu) {
+        adminUserDropdown.addEventListener('click', function(e) {
+          e.stopPropagation();
+          adminDropdownMenu.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', function(e) {
+          if (!adminUserDropdown.contains(e.target) && !adminDropdownMenu.contains(e.target)) {
+            adminDropdownMenu.classList.remove('active');
+          }
+        });
+      }
+      
+      // Delete confirmation
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+      
+      if (deleteButtons) {
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function(e) {
+            if (!confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+              e.preventDefault();
+            }
+          });
+        });
+      }
+    });
+  </script>
+  </body>
+  </html>

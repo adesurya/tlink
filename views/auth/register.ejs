@@ -1,0 +1,164 @@
+<div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>Register</h1>
+        <p>Buat akun untuk mulai menjadi affiliate</p>
+      </div>
+      
+      <% if (error && error.length > 0) { %>
+        <div class="alert alert-error">
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="/auth/register" method="POST" class="auth-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required placeholder="Masukkan username Anda">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="Masukkan email Anda">
+        </div>
+        
+        <div class="form-group">
+          <label for="fullName">Nama Lengkap</label>
+          <input type="text" id="fullName" name="fullName" required placeholder="Masukkan nama lengkap Anda">
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Nomor Telepon</label>
+          <input type="tel" id="phone" name="phone" placeholder="Masukkan nomor telepon Anda">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Minimal 6 karakter">
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmPassword">Konfirmasi Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Masukkan kembali password Anda">
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Register</button>
+        </div>
+        
+        <div class="auth-links">
+          <p>Sudah punya akun? <a href="/auth/login">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <style>
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      padding: 20px;
+    }
+    
+    .auth-card {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      padding: 30px;
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .auth-header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .auth-header p {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .alert {
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    
+    .alert-error {
+      background-color: #ffe6e6;
+      color: #e74c3c;
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .auth-form .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .auth-form label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    
+    .auth-form input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .auth-form input:focus {
+      border-color: var(--secondary-color);
+      outline: none;
+    }
+    
+    .form-actions {
+      margin-top: 25px;
+    }
+    
+    .btn-primary {
+      width: 100%;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background-color: #d02f50;
+    }
+    
+    .auth-links {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .auth-links a {
+      color: var(--secondary-color);
+      text-decoration: none;
+    }
+    
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+  </style>

@@ -1,0 +1,582 @@
+<div class="product-detail-container">
+    <div class="product-header">
+      <div class="navigation-controls">
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="slide-controls">
+          <span class="slide-indicator">1/<%= product.images ? product.images.length : 1 %></span>
+        </div>
+        <div class="action-controls">
+          <a href="#" class="share-btn">
+            <i class="fas fa-share-alt"></i>
+          </a>
+          <a href="#" class="refresh-btn">
+            <i class="fas fa-sync-alt"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="product-slider">
+        <div class="slide-message">
+          <h2>SANGAT NYAMAN  MUDAH DIPAKAI!</h2>
+        </div>
+        <div class="main-image">
+          <img src="<%= product.image %>" alt="<%= product.name %>">
+        </div>
+        
+        <div class="bonus-info">
+            <% if (product.bonusInfo && product.bonusInfo.length > 0) { %>
+              <% product.bonusInfo.forEach(bonus => { %>
+                <div class="bonus-item">
+                  <h3><%= bonus.title %></h3>
+                  <p><%= bonus.description %></p>
+                  <% if (bonus.image) { %>
+                    <img src="<%= bonus.image %>" alt="<%= bonus.title %>" class="bonus-image">
+                  <% } %>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div class="bonus-item">
+                <h3>Beli 1 Kotak</h3>
+                <p>FREE Pinset</p>
+                <img src="/images/accessories/pinset.jpg" alt="Pinset" class="bonus-image">
+              </div>
+              
+              <div class="bonus-item">
+                <h3>Beli 2 Kotak</h3>
+                <p>(model sama/beda)</p>
+                <p>FREE Lem+Pinset+Sikat+microbrush+cincin lem</p>
+                <div class="bonus-images">
+                  <img src="/images/accessories/accessories-kit.jpg" alt="Accessories kit" class="bonus-image">
+                </div>
+              </div>
+            <% } %>
+          </div>
+      </div>
+    </div>
+    
+    <div class="commission-panel">
+        <div class="commission-header">
+          <div class="high-commission-badge">Komisi Tinggi</div>
+          <div class="total-commission">Dapatkan <span class="commission-value"><%= product.formattedTotalCommission %></span>/pcs</div>
+        </div>
+        
+        <div class="commission-details">
+          <% if (product.commissionSources && product.commissionSources.length > 0) { %>
+            <div class="commission-source tiktok">
+              <div class="source-logo">
+                <i class="<%= product.commissionSources[0].icon %>"></i>
+                <span><%= product.commissionSources[0].name %></span>
+              </div>
+              <div class="source-amount">
+                <div class="amount-value"><%= product.commissionSources[0].formattedAmount %></div>
+                <div class="amount-rate">Tarif Komisi: <%= product.commissionSources[0].rate %>%</div>
+              </div>
+            </div>
+            
+            <div class="commission-plus">+</div>
+            
+            <div class="commission-source ibooming">
+              <div class="source-logo">
+                <span class="logo-circle">iB</span>
+                <span><%= product.commissionSources[1].name %>&reg;</span>
+              </div>
+              <div class="source-amount">
+                <div class="amount-value"><%= product.commissionSources[1].formattedAmount %></div>
+                <div class="amount-rate">Tarif Cashback: <%= product.commissionSources[1].rate %>%</div>
+              </div>
+            </div>
+          <% } else { %>
+            <div class="commission-source">
+              <div class="source-logo">
+                <i class="fas fa-gift"></i>
+                <span>Komisi Produk</span>
+              </div>
+              <div class="source-amount">
+                <div class="amount-value"><%= product.formattedTotalCommission %></div>
+                <div class="amount-rate">Tarif Komisi: <%= product.commission %>%</div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    
+    <div class="product-info">
+        <h1 class="product-title"><%= product.name %></h1>
+        
+        <div class="product-description">
+          <p><%= product.description %></p>
+        </div>
+        
+        <div class="product-category">
+          <span class="category-label"><%= product.category ? product.category.name : 'Perawatan & Kecantikan' %></span>
+        </div>
+        
+        <div class="product-actions">
+            <% if (user) { %>
+              <a href="/products/<%= product._id %>/affiliate" class="buy-now-btn">
+                <i class="fas fa-shopping-cart"></i> Beli Sekarang
+              </a>
+            <% } else { %>
+              <a href="/auth/login?returnTo=/products/<%= product._id %>/affiliate" class="buy-now-btn">
+                <i class="fas fa-shopping-cart"></i> Beli Sekarang
+              </a>
+            <% } %>
+            
+            <a href="#" class="add-favorites-btn">
+              <i class="far fa-heart"></i> Simpan
+            </a>
+        </div>
+    </div>
+    
+    <div class="product-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active">Detail</button>
+        <button class="tab-btn">Ulasan</button>
+        <button class="tab-btn">Diskusi</button>
+      </div>
+      
+      <div class="tab-content detail-tab">
+        <div class="detail-content">
+          <h3>Spesifikasi Produk</h3>
+          <ul class="spec-list">
+            <% if (product.specifications && product.specifications.length > 0) { %>
+              <% product.specifications.forEach(spec => { %>
+                <li><strong><%= spec.label %>:</strong> <%= spec.value %></li>
+              <% }); %>
+            <% } else { %>
+              <li><strong>Brand:</strong> <%= product.name.split(' ')[0] %></li>
+              <li><strong>Model:</strong> <%= product.name.includes('(') ? product.name.split('(')[1].split(')')[0] : '-' %></li>
+              <li><strong>Type:</strong> <%= product.category ? product.category.name : 'Beauty' %> Product</li>
+              <li><strong>Bonus:</strong> Beli 1 kotak dapat pinset atau beli 2 kotak dapat lem, pinset, sikat, microbrush, cincin lem</li>
+            <% } %>
+          </ul>
+          
+          <h3>Cara Penggunaan</h3>
+          <ol class="usage-list">
+            <% if (product.howToUse && product.howToUse.length > 0) { %>
+              <% product.howToUse.forEach(step => { %>
+                <li><%= step %></li>
+              <% }); %>
+            <% } else { %>
+              <li>Bersihkan area mata dari makeup</li>
+              <li>Ukur panjang bulu mata dan potong sesuai kebutuhan</li>
+              <li>Oleskan lem pada garis bulu mata</li>
+              <li>Tunggu hingga lem sedikit mengering (sekitar 30 detik)</li>
+              <li>Pasang bulu mata palsu menggunakan pinset</li>
+              <li>Tekan perlahan agar menempel dengan baik</li>
+            <% } %>
+          </ol>
+        </div>
+      </div>
+    </div>
+    
+    <div class="related-products">
+        <h2>Produk Terkait</h2>
+        
+        <div class="product-grid">
+          <% relatedProducts.forEach(relatedProduct => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <img src="<%= relatedProduct.image %>" alt="<%= relatedProduct.name %>">
+                <% if (relatedProduct.discountPercentage > 0) { %>
+                  <span class="discount-badge">-<%= relatedProduct.discountPercentage %>%</span>
+                <% } %>
+              </div>
+              <div class="product-info">
+                <h3 class="product-name"><%= relatedProduct.name.length > 40 ? relatedProduct.name.substring(0, 40) + '...' : relatedProduct.name %></h3>
+                <div class="product-price">
+                  <% if (relatedProduct.discountPrice > 0) { %>
+                    <span class="original-price">$<%= relatedProduct.price.toFixed(2) %></span>
+                    <span class="discount-price">$<%= relatedProduct.discountPrice.toFixed(2) %></span>
+                  <% } else { %>
+                    <span class="current-price">$<%= relatedProduct.price.toFixed(2) %></span>
+                  <% } %>
+                </div>
+                <div class="mini-commission">
+                  <span>Komisi: <%= relatedProduct.totalCommission ? relatedProduct.formattedCommission : '$' + (relatedProduct.price * relatedProduct.commission / 100).toFixed(2) + '+' %></span>
+                </div>
+                <a href="/products/<%= relatedProduct._id %>" class="view-product-btn">Lihat Produk</a>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+  </div>
+  
+  <style>
+    .product-detail-container {
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    
+    .product-header {
+      position: relative;
+    }
+    
+    .navigation-controls {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 15px;
+      z-index: 10;
+    }
+    
+    .back-btn, .share-btn, .refresh-btn {
+      width: 30px;
+      height: 30px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    
+    .action-controls {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .slide-indicator {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 12px;
+    }
+    
+    .product-slider {
+      background-color: #f8e1e8;
+      padding: 50px 15px 20px;
+      border-radius: 0 0 15px 15px;
+    }
+    
+    .slide-message {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .slide-message h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .main-image {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .main-image img {
+      max-width: 70%;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bonus-info {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .bonus-item {
+      flex: 1;
+      padding: 0 10px;
+    }
+    
+    .bonus-item h3 {
+      color: #e03e52;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .bonus-item p {
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .bonus-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+    
+    .commission-panel {
+      background-color: white;
+      border-radius: 10px;
+      margin: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .commission-header {
+      padding: 12px 15px;
+      background-color: #f5f5f8;
+    }
+    
+    .high-commission-badge {
+      display: inline-block;
+      background-color: #e74c3c;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    
+    .total-commission {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .commission-value {
+      color: #e03e52;
+    }
+    
+    .commission-details {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .commission-source {
+      flex: 1;
+    }
+    
+    .commission-plus {
+      font-size: 18px;
+      font-weight: 600;
+      color: #e03e52;
+      margin: 0 10px;
+    }
+    
+    .source-logo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    
+    .source-logo i, .source-logo .logo-circle {
+      margin-right: 5px;
+      font-size: 14px;
+    }
+    
+    .logo-circle {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #333;
+      color: white;
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .source-amount {
+      margin-left: 20px;
+    }
+    
+    .amount-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .amount-rate {
+      font-size: 12px;
+      color: #777;
+    }
+    
+    .product-info {
+      padding: 15px;
+      background-color: white;
+      border-radius: 10px;
+      margin: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    
+    .product-description {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .product-category {
+      margin-bottom: 15px;
+    }
+    
+    .category-label {
+      display: inline-block;
+      background-color: #f5f5f8;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .buy-now-btn {
+      flex: 3;
+      background-color: #e03e52;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .add-favorites-btn {
+      flex: 1;
+      background-color: #f5f5f8;
+      color: #555;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    .product-tabs {
+      background-color: white;
+      border-radius: 10px;
+      margin: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .tabs-header {
+      display: flex;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      background: none;
+      border: none;
+      color: #777;
+      font-weight: 500;
+    }
+    
+    .tab-btn.active {
+      color: #e03e52;
+      font-weight: 600;
+      position: relative;
+    }
+    
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 2px;
+      background-color: #e03e52;
+    }
+    
+    .tab-content {
+      padding: 15px;
+    }
+    
+    .detail-content h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      margin-top: 15px;
+    }
+    
+    .detail-content h3:first-child {
+      margin-top: 0;
+    }
+    
+    .spec-list, .usage-list {
+      padding-left: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .spec-list li, .usage-list li {
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: #555;
+    }
+    
+    .related-products {
+      padding: 15px;
+    }
+    
+    .related-products h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .mini-commission {
+      font-size: 12px;
+      color: #e03e52;
+      margin-bottom: 8px;
+    }
+    
+    @media screen and (min-width: 768px) {
+      .product-slider {
+        display: flex;
+        padding: 60px 30px 30px;
+      }
+      
+      .main-image {
+        flex: 3;
+        margin-right: 30px;
+        margin-bottom: 0;
+      }
+      
+      .bonus-info {
+        flex: 2;
+        flex-direction: column;
+        margin-top: 0;
+      }
+      
+      .bonus-item {
+        margin-bottom: 20px;
+      }
+      
+      .commission-panel {
+        margin: 20px;
+      }
+      
+      .product-info, .product-tabs {
+        margin: 20px;
+      }
+      
+      .product-actions {
+        max-width: 400px;
+      }
+      
+      .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>

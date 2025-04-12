@@ -1,0 +1,129 @@
+<%- include('../../partials/admin-header') %>
+
+<div class="admin-container">
+  <%- include('../../partials/admin-sidebar', { active: 'users' }) %>
+  
+  <main class="admin-content">
+    <div class="admin-header">
+      <h1>Edit Pengguna</h1>
+      <p>Perbarui informasi pengguna</p>
+    </div>
+    
+    <div class="admin-form">
+      <form action="/admin/users/edit/<%= user._id %>" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="<%= user.username %>" disabled>
+            <small>Username tidak dapat diubah</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" disabled>
+            <small>Email tidak dapat diubah</small>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password Baru</label>
+            <input type="password" id="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+            <small>Minimal 6 karakter</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="role">Role <span class="required">*</span></label>
+            <select id="role" name="role" required>
+              <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+              <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fullName">Nama Lengkap</label>
+            <input type="text" id="fullName" name="fullName" value="<%= user.fullName || '' %>" placeholder="Masukkan nama lengkap">
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Nomor Telepon</label>
+            <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="Masukkan nomor telepon">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="isActive">Status Akun</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="isActive" name="isActive" <%= user.isActive ? 'checked' : '' %>>
+              <label for="isActive">Aktif</label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Informasi Lainnya</label>
+            <div class="info-box">
+              <p><strong>Kode Affiliate:</strong> <%= user.affiliateCode || 'Belum dibuat' %></p>
+              <p><strong>Tanggal Bergabung:</strong> <%= new Date(user.createdAt).toLocaleDateString('id-ID') %></p>
+              <p><strong>Login Terakhir:</strong> <%= user.lastLogin ? new Date(user.lastLogin).toLocaleString('id-ID') : 'Belum pernah login' %></p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <a href="/admin/users" class="btn btn-secondary">Batal</a>
+          <button type="submit" class="btn btn-primary">Update Pengguna</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<style>
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  
+  @media (min-width: 768px) {
+    .form-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .form-group-full {
+    grid-column: 1 / -1;
+  }
+  
+  .required {
+    color: var(--admin-danger);
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  .info-box {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .info-box p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+</style>
+
+<%- include('../../partials/admin-footer') %>

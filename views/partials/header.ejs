@@ -1,0 +1,61 @@
+<header class="app-header">
+    <div class="header-top">
+      <div class="logo">
+        <a href="/">
+          <h1>TAPLINK</h1>
+        </a>
+      </div>
+      
+      <div class="search-container">
+        <form action="/products" method="GET">
+          <input type="text" name="search" placeholder="Enter product full name" value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
+          <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+      
+      <div class="notify-icons">
+        <% if (user) { %>
+          <a href="/auth/profile" class="user-profile">
+            <span class="user-name"><%= user.username %></span>
+            <i class="fas fa-user-circle"></i>
+          </a>
+        <% } else { %>
+          <a href="/auth/login" class="login-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+          </a>
+        <% } %>
+      </div>
+    
+    <nav class="category-nav" id="mobileNav">
+      <ul>
+        <li class="<%= (typeof active !== 'undefined' && active === 'for-you') ? 'active' : '' %>">
+          <a href="/">For You</a>
+        </li>
+        <li class="<%= (typeof active !== 'undefined' && active === 'beauty') ? 'active' : '' %>">
+          <a href="/products/category/beauty">Beauty</a>
+        </li>
+        <li class="<%= (typeof active !== 'undefined' && active === 'fashion') ? 'active' : '' %>">
+          <a href="/products/category/fashion">Fashion</a>
+        </li>
+        <li class="<%= (typeof active !== 'undefined' && active === 'electronics') ? 'active' : '' %>">
+          <a href="/products/category/electronics">Electronics</a>
+        </li>
+        <li class="<%= (typeof active !== 'undefined' && active === 'baby') ? 'active' : '' %>">
+          <a href="/products/category/baby">Baby &amp; Kids</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <script>
+    const toggleBtn = document.getElementById("hamburgerToggle");
+    const navMenu = document.getElementById("mobileNav");
+  
+    toggleBtn.addEventListener("click", () => {
+      navMenu.classList.toggle("show");
+    });
+  </script>
+  
