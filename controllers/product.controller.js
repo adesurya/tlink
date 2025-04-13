@@ -5,6 +5,7 @@ const productService = require('../services/product.service');
 const affiliateService = require('../services/affiliate.service');
 const Category = require('../models/category.model');
 const { formatCurrency, truncateText } = require('../utils/helpers');
+const wishlistService = require('../services/wishlist.service');
 
 class ProductController {
   // Display all products page
@@ -30,7 +31,6 @@ class ProductController {
     }
   }
   
-  // Display single product page
   async getProductDetail(req, res) {
     try {
       const productId = req.params.id;
@@ -42,6 +42,16 @@ class ProductController {
       
       // Increment view count
       await productService.incrementViewCount(productId);
+      
+      // Check if product is in user's wishlist
+      let isInWishlist = false;
+      if (req.session.user) {
+        try {
+          isInWishlist = await wishlistService.isProductInWishlist(req.session.user.id, productId);
+        } catch (err) {
+          console.error('Error checking wishlist:', err);
+        }
+      }
       
       // Format commission for display
       const formattedProduct = {
@@ -65,12 +75,83 @@ class ProductController {
         formattedCommission: formatCurrency(relProd.commission)
       }));
       
+      // Base URL for images and links
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const currentPath = req.originalUrl;
+      
+      // Prepare metadata for SEO and social sharing
+      // Generate clean description (remove HTML tags, limit length)
+      const cleanDescription = product.description.replace(/<\/?[^>]+(>|$)/g, "").substring(0, 160);
+      
+      // Generate keywords from tags and category
+      let keywords = [];
+      if (product.tags && product.tags.length > 0) {
+        keywords = [...product.tags];
+      }
+      if (product.category && product.category.name) {
+        keywords.push(product.category.name);
+      }
+      keywords.push('affiliate', 'komisi', 'produk');
+      
+      // Canonical URL
+      const canonicalUrl = `${baseUrl}/products/${product._id}`;
+      
+      // Prepare JSON-LD structured data
+      const priceFormatted = product.discountPrice > 0 ? 
+        `${product.discountPrice.toLocaleString('id-ID')}` : 
+        `${product.price.toLocaleString('id-ID')}`;
+      
+      const structuredData = JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": [
+          `${baseUrl}${product.image}`,
+          ...(product.images || []).map(img => `${baseUrl}${img}`)
+        ],
+        "description": cleanDescription,
+        "brand": {
+          "@type": "Brand",
+          "name": "Taplink SIJAGO AI"
+        },
+        "offers": {
+          "@type": "Offer",
+          "url": canonicalUrl,
+          "priceCurrency": "IDR",
+          "price": product.discountPrice > 0 ? product.discountPrice : product.price,
+          "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
+          "availability": "https://schema.org/InStock"
+        }
+      });
+      
       res.render('products/detail', {
         title: product.name,
         product: formattedProduct,
         relatedProducts: formattedRelatedProducts,
+        isInWishlist,
         user: req.session.user,
-        req: req
+        baseUrl, // Pass baseUrl to template
+        currentPath, // Pass currentPath to template
+        
+        // SEO metadata
+        metaDescription: cleanDescription,
+        metaKeywords: keywords.join(', '),
+        canonicalUrl,
+        
+        // OpenGraph metadata
+        ogTitle: product.name,
+        ogDescription: cleanDescription,
+        ogType: 'product',
+        ogUrl: canonicalUrl,
+        ogImage: `${baseUrl}${product.image}`,
+        
+        // Twitter Card metadata
+        twitterTitle: product.name,
+        twitterDescription: cleanDescription,
+        twitterImage: `${baseUrl}${product.image}`,
+        
+        // Structured data
+        structuredData: structuredData
       });
     } catch (error) {
       console.error('Error fetching product details:', error);

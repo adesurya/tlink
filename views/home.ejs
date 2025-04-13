@@ -3,15 +3,62 @@
 %>
 
 <div class="home-container">
-  <section class="featured-banner">
-    <div class="featured-content">
-      <h2>1 Minute To Boost Your Sales</h2>
-      <p>Right Product, High Commission</p>
-      <div class="view-count">
-        <span class="view-icon"><i class="fas fa-eye"></i></span>
-        <span class="view-number">68.9k View</span>
+  <section class="featured-carousel">
+    <div class="carousel-container">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- First Slide -->
+        <div class="carousel-slide">
+          <div class="slide-content">
+            <h2>1 Minute To Boost Your Sales</h2>
+            <p>Right Product, High Commission</p>
+            <div class="view-count">
+              <span class="view-icon"><i class="fas fa-eye"></i></span>
+              <span class="view-number">68.9k View</span>
+            </div>
+            <a href="#product-categories" class="view-now-btn">View now <i class="fas fa-chevron-right"></i></a>
+          </div>
+          <div class="slide-bg" style="background-image: url('/images/banners/banner1.jpg');"></div>
+        </div>
+        
+        <!-- Second Slide -->
+        <div class="carousel-slide">
+          <div class="slide-content">
+            <h2>Earn More With Top Products</h2>
+            <p>High Commission, Easy to Promote</p>
+            <div class="view-count">
+              <span class="view-icon"><i class="fas fa-fire"></i></span>
+              <span class="view-number">Trending Now</span>
+            </div>
+            <a href="/products/hot" class="view-now-btn">Hot Products <i class="fas fa-chevron-right"></i></a>
+          </div>
+          <div class="slide-bg" style="background-image: url('/images/banners/banner2.jpg');"></div>
+        </div>
+        
+        <!-- Third Slide -->
+        <div class="carousel-slide">
+          <div class="slide-content">
+            <h2>Viral Products Collection</h2>
+            <p>Products That Sell Themselves</p>
+            <div class="view-count">
+              <span class="view-icon"><i class="fas fa-chart-line"></i></span>
+              <span class="view-number">Viral Picks</span>
+            </div>
+            <a href="/products/viral" class="view-now-btn">Explore <i class="fas fa-chevron-right"></i></a>
+          </div>
+          <div class="slide-bg" style="background-image: url('/images/banners/banner3.jpg');"></div>
+        </div>
       </div>
-      <a href="#product-categories" class="view-now-btn">View now <i class="fas fa-chevron-right"></i></a>
+      
+      <!-- Navigation Dots -->
+      <div class="carousel-dots" id="carouselDots">
+        <button class="dot active" data-index="0"></button>
+        <button class="dot" data-index="1"></button>
+        <button class="dot" data-index="2"></button>
+      </div>
+      
+      <!-- Navigation Arrows -->
+      <button class="carousel-arrow prev" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+      <button class="carousel-arrow next" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
     </div>
   </section>
   
@@ -85,33 +132,63 @@
   
   <section class="easy-to-sell">
     <div class="section-header">
-      <h2>Easy to Sell</h2>
-      <a href="/products?sort=easy" class="view-all">View All</a>
+      <h2>Produk Komisi Tertinggi</h2>
+      <a href="/products?sort=commission-high" class="view-all">View All</a>
     </div>
     
-    <div class="product-grid small-grid">
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/sample1.jpg" alt="Product 1">
-          <div class="price-tag">Rp 1.000.000</div>
-        </div>
+    <div class="slider-container">
+      <button class="slider-nav prev" id="prevHighComm">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      
+      <div class="product-slider" id="highCommSlider">
+        <% if (highCommissionProducts && highCommissionProducts.length > 0) { %>
+          <% highCommissionProducts.forEach(product => { %>
+            <div class="product-slide">
+              <div class="product-card high-comm-card">
+                <div class="product-image">
+                  <a href="/products/<%= product._id %>">
+                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                  </a>
+                  <% if (product.discountPercentage > 0) { %>
+                    <div class="discount-badge">-<%= product.discountPercentage %>%</div>
+                  <% } %>
+                  <% if (product.highCommission) { %>
+                    <div class="high-commission-badge">Komisi Tinggi</div>
+                  <% } %>
+                </div>
+                <div class="product-info">
+                  <h3 class="product-name">
+                    <a href="/products/<%= product._id %>"><%= product.name.length > 30 ? product.name.substring(0, 30) + '...' : product.name %></a>
+                  </h3>
+                  <div class="product-price">
+                    <% if (product.discountPrice && product.discountPrice > 0) { %>
+                      <span class="original-price">Rp <%= product.price.toLocaleString('id-ID') %></span>
+                      <span class="discount-price">Rp <%= product.discountPrice.toLocaleString('id-ID') %></span>
+                    <% } else { %>
+                      <span class="current-price">Rp <%= product.price.toLocaleString('id-ID') %></span>
+                    <% } %>
+                  </div>
+                  <div class="product-commission">
+                    <span>Komisi: <%= typeof formatCurrency !== 'undefined' ? formatCurrency(product.totalCommission || (product.price * product.commission / 100)) : 'Rp ' + (product.totalCommission || (product.price * product.commission / 100)).toLocaleString('id-ID') %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="no-products-message">
+            <p>Belum ada produk dengan komisi tinggi</p>
+          </div>
+        <% } %>
       </div>
       
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/sample2.jpg" alt="Product 2">
-          <div class="price-tag">Rp 2.500.000</div>
-        </div>
-      </div>
-      
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/sample3.jpg" alt="Product 3">
-          <div class="price-tag">Rp 4.000.000</div>
-        </div>
-      </div>
+      <button class="slider-nav next" id="nextHighComm">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
   </section>
+  
   
   <section class="tiktok-event">
     <div class="section-header">
@@ -150,3 +227,224 @@
     </div>
   </section>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    const track = document.getElementById('carouselTrack');
+    const slides = Array.from(track.children);
+    const dots = Array.from(document.querySelectorAll('.carousel-dots .dot'));
+    const nextButton = document.getElementById('nextSlide');
+    const prevButton = document.getElementById('prevSlide');
+    
+    let currentIndex = 0;
+    let startX;
+    let isDragging = false;
+    let autoplayInterval;
+    
+    // Set initial position
+    positionSlides();
+    
+    // Position slides next to each other
+    function positionSlides() {
+      track.style.transform = `translateX(${-currentIndex * 100}%)`;
+      updateDots();
+    }
+    
+    // Update active dot
+    function updateDots() {
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+    }
+    
+    // Navigate to specific slide
+    function goToSlide(index) {
+      // Make sure index is within bounds
+      if (index < 0) {
+        index = slides.length - 1;
+      } else if (index >= slides.length) {
+        index = 0;
+      }
+      
+      currentIndex = index;
+      positionSlides();
+      resetAutoplay();
+    }
+    
+    // Handle dot clicks
+    dots.forEach(dot => {
+      dot.addEventListener('click', e => {
+        const targetIndex = parseInt(dot.getAttribute('data-index'));
+        goToSlide(targetIndex);
+      });
+    });
+    
+    // Handle next/prev buttons
+    nextButton.addEventListener('click', () => {
+      goToSlide(currentIndex + 1);
+    });
+    
+    prevButton.addEventListener('click', () => {
+      goToSlide(currentIndex - 1);
+    });
+    
+    // Touch events for swipe
+    track.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+      // Pause transition during drag
+      track.style.transition = 'none';
+    }, { passive: true });
+    
+    track.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      
+      const currentX = e.touches[0].clientX;
+      const diff = startX - currentX;
+      
+      // Calculate how much to move
+      const moveX = -currentIndex * 100 - (diff / track.offsetWidth) * 100;
+      
+      // Apply the transform 
+      track.style.transform = `translateX(${moveX}%)`;
+    }, { passive: true });
+    
+    track.addEventListener('touchend', e => {
+      if (!isDragging) return;
+      
+      isDragging = false;
+      track.style.transition = 'transform 0.5s ease';
+      
+      const currentX = e.changedTouches[0].clientX;
+      const diff = startX - currentX;
+      
+      // Determine if we should change slides based on swipe distance
+      if (Math.abs(diff) > track.offsetWidth / 4) {
+        if (diff > 0) {
+          // Swiped left, go to next
+          goToSlide(currentIndex + 1);
+        } else {
+          // Swiped right, go to previous
+          goToSlide(currentIndex - 1);
+        }
+      } else {
+        // Not enough swipe distance, snap back
+        positionSlides();
+      }
+    }, { passive: true });
+    
+    // Setup autoplay
+    function startAutoplay() {
+      autoplayInterval = setInterval(() => {
+        goToSlide(currentIndex + 1);
+      }, 5000); // Change slide every 5 seconds
+    }
+    
+    function resetAutoplay() {
+      clearInterval(autoplayInterval);
+      startAutoplay();
+    }
+    
+    // Handle visibility change to pause/resume autoplay
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(autoplayInterval);
+      } else {
+        startAutoplay();
+      }
+    });
+    
+    // Start autoplay
+    startAutoplay();
+    
+    // Prevent autoplay issues when switching tabs or windows
+    window.addEventListener('focus', resetAutoplay);
+    window.addEventListener('blur', () => clearInterval(autoplayInterval));
+
+
+    const slider = document.getElementById('highCommSlider');
+    const prevBtn = document.getElementById('prevHighComm');
+    const nextBtn = document.getElementById('nextHighComm');
+    
+    if (!slider || !prevBtn || !nextBtn) return;
+    
+    // Get the width of one slide plus gap
+    const getScrollAmount = () => {
+      const slide = slider.querySelector('.product-slide');
+      if (!slide) return 0;
+      
+      // Get slide width + gap
+      return slide.offsetWidth + 15;
+    };
+    
+    // Scroll left/right by one slide
+    const scrollPrev = () => {
+      slider.scrollBy({
+        left: -getScrollAmount(),
+        behavior: 'smooth'
+      });
+    };
+    
+    const scrollNext = () => {
+      slider.scrollBy({
+        left: getScrollAmount(),
+        behavior: 'smooth'
+      });
+    };
+    
+    // Update button states based on scroll position
+    const updateButtonStates = () => {
+      const isAtStart = slider.scrollLeft < 10;
+      const isAtEnd = slider.scrollLeft >= slider.scrollWidth - slider.clientWidth - 10;
+      
+      prevBtn.classList.toggle('disabled', isAtStart);
+      nextBtn.classList.toggle('disabled', isAtEnd);
+    };
+    
+    // Mobile touch handling
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    };
+    
+    const handleTouchEnd = (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    };
+    
+    const handleSwipe = () => {
+      const swipeThreshold = 50;
+      const swipeDistance = touchStartX - touchEndX;
+      
+      if (Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0) {
+          // Swipe left, go next
+          scrollNext();
+        } else {
+          // Swipe right, go prev
+          scrollPrev();
+        }
+      }
+    };
+    
+    // Add event listeners
+    prevBtn.addEventListener('click', scrollPrev);
+    nextBtn.addEventListener('click', scrollNext);
+    slider.addEventListener('scroll', updateButtonStates);
+    
+    // Touch events for mobile
+    slider.addEventListener('touchstart', handleTouchStart, { passive: true });
+    slider.addEventListener('touchend', handleTouchEnd, { passive: true });
+    
+    // Initial button state
+    updateButtonStates();
+    
+    // Update on resize
+    window.addEventListener('resize', () => {
+      setTimeout(updateButtonStates, 200);
+    });
+  });
+</script>

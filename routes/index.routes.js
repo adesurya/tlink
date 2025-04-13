@@ -1,7 +1,12 @@
+// Update in routes/index.routes.js
+// Modify the home page route to fetch high commission products
+
 const express = require('express');
 const router = express.Router();
 const productService = require('../services/product.service');
 const Category = require('../models/category.model');
+const { formatCurrency } = require('../utils/helpers');
+const sitemapController = require('../controllers/sitemap.controller');
 
 // Home page
 router.get('/', async (req, res) => {
@@ -18,16 +23,21 @@ router.get('/', async (req, res) => {
     // Get top rated products
     const topRatedProducts = await productService.getTopRatedProducts(4);
     
+    // Get products with highest commission (NEW)
+    const highCommissionProducts = await productService.getHighCommissionProducts(10);
+    
     // Get categories
     const categories = await Category.find({ isActive: true }).sort({ displayOrder: 1 });
     
     res.render('home', {
-      title: 'taplink - Raih Cuan Affiliate bersama Taplink SIJAGO AI!',
+      title: 'Taplink - Raih Cuan Affiliate bersama Taplink SIJAGO AI!',
       featuredProducts: featuredProducts.products,
       viralProducts,
       hotProducts,
       topRatedProducts,
-      categories
+      highCommissionProducts, // Pass the high commission products to the template
+      categories,
+      formatCurrency // Pass the currency formatter function to the template
     });
   } catch (error) {
     console.error('Error loading home page:', error);
@@ -45,4 +55,7 @@ router.get('/contact', (req, res) => {
   res.render('contact', { title: 'Contact Us' });
 });
 
+router.get('/sitemap.xml', sitemapController.getSitemap);
+
 module.exports = router;
+

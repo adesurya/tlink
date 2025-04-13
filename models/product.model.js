@@ -1,131 +1,140 @@
 const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    description: {
-      type: String,
-      required: true
-    },
-    price: {
-      type: Number,
-      required: true
-    },
-    discountPrice: {
-      type: Number,
-      default: 0
-    },
-    commission: {
-      type: Number,
-      default: 0
-    },
-    commissionSources: [{
-      name: {
-        type: String,
-        required: true
-      },
-      amount: {
-        type: Number,
-        required: true
-      },
-      rate: {
-        type: Number,
-        required: true
-      },
-      icon: {
-        type: String,
-        default: 'fa-gift'
-      }
-    }],
-    totalCommission: {
-      type: Number,
-      default: 0
-    },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
-      required: true
-    },
-    image: {
-      type: String,
-      required: true
-    },
-    images: [{
-      type: String
-    }],
-    bonusInfo: [{
-      title: {
-        type: String,
-        required: true
-      },
-      description: {
-        type: String
-      },
-      image: {
-        type: String
-      }
-    }],
-    specifications: [{
-      label: {
-        type: String,
-        required: true
-      },
-      value: {
-        type: String,
-        required: true
-      }
-    }],
-    howToUse: [{
-      type: String
-    }],
-    affiliateLink: {
-      type: String,
-      required: true
-    },
-    views: {
-      type: Number,
-      default: 0
-    },
-    isViral: {
-      type: Boolean,
-      default: false
-    },
-    isHot: {
-      type: Boolean,
-      default: false
-    },
-    isTopRated: {
-      type: Boolean,
-      default: false
-    },
-    isFeatured: {
-      type: Boolean,
-      default: false
-    },
-    ratings: {
-      type: Number,
-      default: 0,
-      min: 0,
-      max: 5
-    },
-    tags: [{
-      type: String
-    }],  
-  createdAt: {
-    type: Date,
-    default: Date.now
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+  description: {
+    type: String,
+    required: true
   },
-  viewCount: {
+  price: {
+    type: Number,
+    required: true
+  },
+  discountPrice: {
     type: Number,
     default: 0
-  }
+  },
+  commission: {
+    type: Number,
+    default: 0
+  },
+  highCommission: {      // Add this new field
+    type: Boolean,
+    default: false
+  },
+  commissionSources: [{
+    name: {
+      type: String,
+      required: true
+    },
+    amount: {
+      type: Number,
+      required: true
+    },
+    rate: {
+      type: Number,
+      required: true
+    },
+    icon: {
+      type: String,
+      default: 'fa-gift'
+    }
+  }],
+  totalCommission: {
+    type: Number,
+    default: 0
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
+  },
+  image: {
+    type: String,
+    required: true  // Main image (thumbnail)
+  },
+  images: [{
+    type: String    // Additional images
+  }],
+  bonusInfo: [{
+    title: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String
+    },
+    image: {
+      type: String
+    }
+  }],
+  detailInformation: {
+    type: String,
+    default: ''  // Rich text field for detailed product information
+  },
+  specifications: [{
+    label: {
+      type: String,
+      required: true
+    },
+    value: {
+      type: String,
+      required: true
+    }
+  }],
+  howToUse: [{
+    type: String
+  }],
+  affiliateLink: {
+    type: String,
+    required: true
+  },
+  views: {
+    type: Number,
+    default: 0
+  },
+  isViral: {
+    type: Boolean,
+    default: false
+  },
+  isHot: {
+    type: Boolean,
+    default: false
+  },
+  isTopRated: {
+    type: Boolean,
+    default: false
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
+  ratings: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 5
+  },
+  tags: [{
+    type: String
+  }],  
+createdAt: {
+  type: Date,
+  default: Date.now
+},
+updatedAt: {
+  type: Date,
+  default: Date.now
+},
+viewCount: {
+  type: Number,
+  default: 0
+},
+
 });
 
 // Update the updatedAt timestamp on save

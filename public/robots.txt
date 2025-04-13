@@ -1,0 +1,22 @@
+# robots.txt for TapLink SIJAGO AI
+
+User-agent: *
+Allow: /
+Allow: /products/
+Allow: /products/category/
+Allow: /categories/
+Allow: /products/viral
+Allow: /products/hot
+Allow: /products/top-rated
+
+# Disallow admin and auth pages
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /user/
+
+# Disallow search results pages
+Disallow: /products?*
+Disallow: /products/?*
+
+# Sitemap location
+Sitemap: https://taplink.sijago.ai/sitemap.xml

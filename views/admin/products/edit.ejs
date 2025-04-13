@@ -30,13 +30,37 @@
           </div>
           
           <div class="form-group">
-            <label for="image">Gambar Produk</label>
-            <div class="image-preview">
+            <label for="image">Gambar Utama Produk</label>
+            <div class="main-image-preview">
               <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image">
             </div>
             <input type="file" id="image" name="image" accept="image/*">
-            <small>Biarkan kosong jika tidak ingin mengubah gambar</small>
+            <small>Biarkan kosong jika tidak ingin mengubah gambar utama</small>
           </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label for="additionalImages">Gambar Tambahan (Max 5)</label>
+          <div class="additional-images-container">
+            <% if (product.images && product.images.length > 0) { %>
+              <% product.images.forEach((img, index) => { %>
+                <div class="additional-image">
+                  <img src="<%= img %>" alt="Additional Image <%= index + 1 %>">
+                  <div class="image-actions">
+                    <input type="hidden" name="existingImages[]" value="<%= img %>">
+                    <button type="button" class="remove-image-btn" data-image="<%= img %>">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p class="no-images">Belum ada gambar tambahan</p>
+            <% } %>
+          </div>
+          <input type="file" id="additionalImages" name="additionalImages" accept="image/*" multiple>
+          <small>Format: JPG, PNG, GIF. Max 5MB per gambar</small>
+          <div class="image-preview-container" id="imagePreviewContainer"></div>
         </div>
         
         <div class="form-row">
@@ -63,18 +87,97 @@
             <input type="url" id="affiliateLink" name="affiliateLink" required value="<%= product.affiliateLink %>" placeholder="https://example.com/product">
           </div>
         </div>
-        
-        <div class="form-group form-group-full">
-          <label for="description">Deskripsi Produk <span class="required">*</span></label>
-          <textarea id="description" name="description" required placeholder="Masukkan deskripsi produk"><%= product.description %></textarea>
-        </div>
-        
+
         <div class="form-group form-group-full">
           <label for="tags">Tags</label>
           <input type="text" id="tags" name="tags" value="<%= product.tags ? product.tags.join(', ') : '' %>" placeholder="Contoh: fashion, baju, wanita">
           <small>Pisahkan dengan koma</small>
         </div>
         
+        <div class="form-group form-group-full">
+          <label for="description">Deskripsi Produk <span class="required">*</span></label>
+          <textarea id="description" name="description" required placeholder="Masukkan deskripsi produk"><%= product.description %></textarea>
+        </div>
+       
+        <div class="form-card">
+          <div class="form-card-header">
+            <h3>Informasi Detail Produk</h3>
+          </div>
+          <div class="form-card-body">
+            <div class="form-group form-group-full">
+              <label for="detailInformation">Detail Produk</label>
+              <textarea id="detailInformation" name="detailInformation" rows="5" placeholder="Masukkan deskripsi detail produk"><%= product.detailInformation || '' %></textarea>
+              <small>Anda dapat menggunakan format Markdown untuk konten yang lebih kaya</small>
+            </div>
+            
+            <div class="form-group form-group-full">
+              <label>Spesifikasi Produk</label>
+              <div id="specifications-container">
+                <% if (product.specifications && product.specifications.length > 0) { %>
+                  <% product.specifications.forEach(spec => { %>
+                    <div class="specification-item">
+                      <div class="spec-inputs">
+                        <input type="text" name="specLabel[]" value="<%= spec.label %>" placeholder="Label (contoh: Bahan)" required>
+                        <input type="text" name="specValue[]" value="<%= spec.value %>" placeholder="Nilai (contoh: Katun)" required>
+                      </div>
+                      <button type="button" class="btn-remove-spec">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  <% }); %>
+                <% } else { %>
+                  <!-- Default empty specification -->
+                  <div class="specification-item">
+                    <div class="spec-inputs">
+                      <input type="text" name="specLabel[]" placeholder="Label (contoh: Bahan)" required>
+                      <input type="text" name="specValue[]" placeholder="Nilai (contoh: Katun)" required>
+                    </div>
+                    <button type="button" class="btn-remove-spec">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+              <button type="button" id="add-specification" class="btn btn-sm btn-secondary mt-2">
+                <i class="fas fa-plus"></i> Tambah Spesifikasi
+              </button>
+            </div>
+            
+            <div class="form-group form-group-full">
+              <label>Cara Penggunaan</label>
+              <div id="how-to-use-container">
+                <% if (product.howToUse && product.howToUse.length > 0) { %>
+                  <% product.howToUse.forEach((step, index) => { %>
+                    <div class="how-to-use-item">
+                      <div class="step-input">
+                        <span class="step-number"><%= index + 1 %></span>
+                        <input type="text" name="howToUse[]" value="<%= step %>" placeholder="Langkah penggunaan" required>
+                      </div>
+                      <button type="button" class="btn-remove-step">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  <% }); %>
+                <% } else { %>
+                  <!-- Default empty step -->
+                  <div class="how-to-use-item">
+                    <div class="step-input">
+                      <span class="step-number">1</span>
+                      <input type="text" name="howToUse[]" placeholder="Langkah penggunaan" required>
+                    </div>
+                    <button type="button" class="btn-remove-step">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                <% } %>
+              </div>
+              <button type="button" id="add-step" class="btn btn-sm btn-secondary mt-2">
+                <i class="fas fa-plus"></i> Tambah Langkah
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group form-group-full">
           <label>Status Produk</label>
           
@@ -97,6 +200,11 @@
             <div class="checkbox-group">
               <input type="checkbox" id="isFeatured" name="isFeatured" <%= product.isFeatured ? 'checked' : '' %>>
               <label for="isFeatured">Featured</label>
+            </div>
+            
+            <div class="checkbox-group">
+              <input type="checkbox" id="highCommission" name="highCommission" <%= product.highCommission ? 'checked' : '' %>>
+              <label for="highCommission">Komisi Tinggi</label>
             </div>
           </div>
         </div>
@@ -158,12 +266,317 @@
   }
   
   .current-image {
-    max-width: 100px;
-    max-height: 100px;
+    max-width: 120px;
+    max-height: 120px;
     border-radius: 5px;
     border: 1px solid #ddd;
     padding: 3px;
   }
+
+  .additional-images-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .additional-image {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .additional-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .image-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 0 0 0 4px;
+  }
+  
+  .remove-image-btn {
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .remove-image-btn:hover {
+    color: #ff6b6b;
+  }
+  
+  .no-images {
+    font-style: italic;
+    color: #999;
+  }
+  
+  .image-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .image-preview {
+    width: 80px;
+    height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .main-image-preview {
+    margin-bottom: 10px;
+  }
+
+  .form-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  
+  .form-card-header {
+    background-color: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .form-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .form-card-body {
+    padding: 20px;
+  }
+  
+  .specification-item, .how-to-use-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+  }
+  
+  .spec-inputs {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+  }
+  
+  .spec-inputs input {
+    flex: 1;
+  }
+  
+  .step-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+  
+  .step-input input {
+    flex: 1;
+  }
+  
+  .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  
+  .btn-remove-spec, .btn-remove-step {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+  
+  .btn-remove-spec:hover, .btn-remove-step:hover {
+    background-color: #ffe6e6;
+  }
+  
+  .mt-2 {
+    margin-top: 10px;
+  }
+
 </style>
+
+<script>
+  // Preview additional images
+  document.getElementById('additionalImages').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    previewContainer.innerHTML = '';
+    
+    if (this.files.length > 5) {
+      alert('Maksimal 5 gambar yang dapat diunggah');
+      this.value = '';
+      return;
+    }
+    
+    for (let i = 0; i < this.files.length; i++) {
+      const file = this.files[i];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const preview = document.createElement('div');
+        preview.className = 'image-preview';
+        preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        previewContainer.appendChild(preview);
+      }
+      
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Remove existing image
+  const removeButtons = document.querySelectorAll('.remove-image-btn');
+  removeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const imageUrl = this.getAttribute('data-image');
+      const imageContainer = this.closest('.additional-image');
+      
+      if (confirm('Apakah Anda yakin ingin menghapus gambar ini?')) {
+        // Create a hidden input to mark this image for deletion
+        const deleteInput = document.createElement('input');
+        deleteInput.type = 'hidden';
+        deleteInput.name = 'deleteImages[]';
+        deleteInput.value = imageUrl;
+        document.querySelector('form').appendChild(deleteInput);
+        
+        // Hide the image in the UI
+        imageContainer.style.display = 'none';
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Specifications
+    const specificationsContainer = document.getElementById('specifications-container');
+    const addSpecButton = document.getElementById('add-specification');
+    
+    addSpecButton.addEventListener('click', function() {
+      const specItem = document.createElement('div');
+      specItem.className = 'specification-item';
+      specItem.innerHTML = `
+        <div class="spec-inputs">
+          <input type="text" name="specLabel[]" placeholder="Label (contoh: Bahan)" required>
+          <input type="text" name="specValue[]" placeholder="Nilai (contoh: Katun)" required>
+        </div>
+        <button type="button" class="btn-remove-spec">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      specificationsContainer.appendChild(specItem);
+      
+      // Add remove event to the new button
+      specItem.querySelector('.btn-remove-spec').addEventListener('click', function() {
+        specificationsContainer.removeChild(specItem);
+      });
+    });
+    
+    // Add remove event to existing specification buttons
+    document.querySelectorAll('.btn-remove-spec').forEach(button => {
+      button.addEventListener('click', function() {
+        const specItem = this.closest('.specification-item');
+        if (specificationsContainer.children.length > 1) {
+          specificationsContainer.removeChild(specItem);
+        } else {
+          // Clear inputs instead of removing if it's the last one
+          specItem.querySelectorAll('input').forEach(input => {
+            input.value = '';
+          });
+        }
+      });
+    });
+    
+    // How To Use Steps
+    const howToUseContainer = document.getElementById('how-to-use-container');
+    const addStepButton = document.getElementById('add-step');
+    
+    addStepButton.addEventListener('click', function() {
+      const stepCount = howToUseContainer.children.length + 1;
+      const stepItem = document.createElement('div');
+      stepItem.className = 'how-to-use-item';
+      stepItem.innerHTML = `
+        <div class="step-input">
+          <span class="step-number">${stepCount}</span>
+          <input type="text" name="howToUse[]" placeholder="Langkah penggunaan" required>
+        </div>
+        <button type="button" class="btn-remove-step">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      howToUseContainer.appendChild(stepItem);
+      
+      // Add remove event to the new button
+      stepItem.querySelector('.btn-remove-step').addEventListener('click', function() {
+        howToUseContainer.removeChild(stepItem);
+        // Update step numbers
+        updateStepNumbers();
+      });
+    });
+    
+    // Add remove event to existing step buttons
+    document.querySelectorAll('.btn-remove-step').forEach(button => {
+      button.addEventListener('click', function() {
+        const stepItem = this.closest('.how-to-use-item');
+        if (howToUseContainer.children.length > 1) {
+          howToUseContainer.removeChild(stepItem);
+          // Update step numbers
+          updateStepNumbers();
+        } else {
+          // Clear input instead of removing if it's the last one
+          stepItem.querySelector('input').value = '';
+        }
+      });
+    });
+    
+    // Function to update step numbers
+    function updateStepNumbers() {
+      const steps = howToUseContainer.querySelectorAll('.how-to-use-item');
+      steps.forEach((step, index) => {
+        step.querySelector('.step-number').textContent = index + 1;
+      });
+    }
+  });
+</script>
 
 <%- include('../../partials/admin-footer') %>

@@ -15,6 +15,8 @@ const productRoutes = require('./routes/product.routes');
 const categoryRoutes = require('./routes/category.routes');
 const authRoutes = require('./routes/auth.routes.js');
 const adminRoutes = require('./routes/admin.routes');
+const userRoutes = require('./routes/user.routes');
+const seoMiddleware = require('./middlewares/seo.middleware');
 
 // Import config
 const dbConfig = require('./config/db.config');
@@ -38,6 +40,7 @@ mongoose.connect(dbConfig.mongoURI, {
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(seoMiddleware);
 
 app.use(session({
     secret: appConfig.sessionSecret,
@@ -74,6 +77,7 @@ app.use('/products', productRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
+app.use('/user', userRoutes);
 
 // 404 handler
 app.use((req, res) => {

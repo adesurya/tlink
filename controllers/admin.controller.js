@@ -96,20 +96,52 @@ class AdminController {
     }
   }
   
-  // Add Product Process
+
+  // Update postAddProduct method
   async postAddProduct(req, res) {
     try {
       const {
         name, description, price, discountPrice, 
         commission, category, affiliateLink, 
-        isViral, isHot, isTopRated, isFeatured,
-        tags
+        isViral, isHot, isTopRated, isFeatured, highCommission,
+        tags, detailInformation
       } = req.body;
       
-      // Handle image upload
+      // Get specifications from form
+      const specLabels = req.body['specLabel[]'] || [];
+      const specValues = req.body['specValue[]'] || [];
+      const specifications = [];
+      
+      // Convert to arrays if they're not already
+      const labelsArray = Array.isArray(specLabels) ? specLabels : [specLabels];
+      const valuesArray = Array.isArray(specValues) ? specValues : [specValues];
+      
+      // Create specifications array
+      labelsArray.forEach((label, index) => {
+        if (label.trim() && valuesArray[index] && valuesArray[index].trim()) {
+          specifications.push({
+            label: label.trim(),
+            value: valuesArray[index].trim()
+          });
+        }
+      });
+      
+      // Get how to use steps
+      const howToUseSteps = req.body['howToUse[]'] || [];
+      const howToUse = Array.isArray(howToUseSteps) 
+        ? howToUseSteps.filter(step => step.trim())
+        : howToUseSteps.trim() ? [howToUseSteps] : [];
+      
+      // Handle main image upload
       let image = '/images/products/default.jpg';
-      if (req.file) {
-        image = `/uploads/${req.file.filename}`;
+      if (req.files && req.files.image && req.files.image.length > 0) {
+        image = `/uploads/${req.files.image[0].filename}`;
+      }
+      
+      // Handle additional images
+      let additionalImages = [];
+      if (req.files && req.files.additionalImages) {
+        additionalImages = req.files.additionalImages.map(file => `/uploads/${file.filename}`);
       }
       
       // Calculate commission sources
@@ -124,6 +156,7 @@ class AdminController {
         price: parseFloat(price),
         discountPrice: parseFloat(discountPrice) || 0,
         commission: parseFloat(commission),
+        highCommission: highCommission === 'on',
         commissionSources: [
           {
             name: 'TikTok Komisi',
@@ -141,12 +174,16 @@ class AdminController {
         totalCommission: totalCommission,
         category,
         image,
+        images: additionalImages,
         affiliateLink,
         isViral: isViral === 'on',
         isHot: isHot === 'on',
         isTopRated: isTopRated === 'on',
         isFeatured: isFeatured === 'on',
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+        tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+        detailInformation, // Add detail information
+        specifications,    // Add specifications
+        howToUse           // Add how to use steps
       });
       
       await product.save();
@@ -157,6 +194,133 @@ class AdminController {
       console.error('Error adding product:', error);
       req.flash('error', 'Terjadi kesalahan saat menambahkan produk');
       res.redirect('/admin/products/add');
+    }
+  }
+
+  // Update postEditProduct method
+  async postEditProduct(req, res) {
+    try {
+      const productId = req.params.id;
+      const {
+        name, description, price, discountPrice, 
+        commission, category, affiliateLink, 
+        isViral, isHot, isTopRated, isFeatured, highCommission,
+        tags, detailInformation
+      } = req.body;
+      
+      // Find product
+      const product = await Product.findById(productId);
+      
+      if (!product) {
+        req.flash('error', 'Produk tidak ditemukan');
+        return res.redirect('/admin/products');
+      }
+      
+      // Get specifications from form
+      const specLabels = req.body['specLabel[]'] || [];
+      const specValues = req.body['specValue[]'] || [];
+      const specifications = [];
+      
+      // Convert to arrays if they're not already
+      const labelsArray = Array.isArray(specLabels) ? specLabels : [specLabels];
+      const valuesArray = Array.isArray(specValues) ? specValues : [specValues];
+      
+      // Create specifications array
+      labelsArray.forEach((label, index) => {
+        if (label.trim() && valuesArray[index] && valuesArray[index].trim()) {
+          specifications.push({
+            label: label.trim(),
+            value: valuesArray[index].trim()
+          });
+        }
+      });
+      
+      // Get how to use steps
+      const howToUseSteps = req.body['howToUse[]'] || [];
+      const howToUse = Array.isArray(howToUseSteps) 
+        ? howToUseSteps.filter(step => step.trim())
+        : howToUseSteps.trim() ? [howToUseSteps] : [];
+      
+      // Handle main image upload
+      if (req.files && req.files.image && req.files.image.length > 0) {
+        product.image = `/uploads/${req.files.image[0].filename}`;
+      }
+      
+      // Handle existing images (remove deleted ones)
+      const existingImages = req.body['existingImages[]'] || [];
+      const deleteImages = req.body['deleteImages[]'] || [];
+      
+      // Convert to arrays if they're not already
+      const existingImagesArray = Array.isArray(existingImages) ? existingImages : [existingImages];
+      const deleteImagesArray = Array.isArray(deleteImages) ? deleteImages : [deleteImages];
+      
+      // Filter out images marked for deletion
+      const remainingImages = product.images.filter(img => 
+        !deleteImagesArray.includes(img) && existingImagesArray.includes(img)
+      );
+      
+      // Handle new additional images
+      const newAdditionalImages = [];
+      if (req.files && req.files.additionalImages) {
+        newAdditionalImages.push(...req.files.additionalImages.map(file => `/uploads/${file.filename}`));
+      }
+      
+      // Combine remaining images with new ones
+      product.images = [...remainingImages, ...newAdditionalImages];
+      
+      // Calculate commission sources
+      const totalCommission = parseFloat(commission);
+      const tiktokCommission = totalCommission * 0.4;
+      const iboominCashback = totalCommission * 0.6;
+      
+      // Update product
+      product.name = name;
+      product.description = description;
+      product.price = parseFloat(price);
+      product.discountPrice = parseFloat(discountPrice) || 0;
+      product.commission = parseFloat(commission);
+      product.highCommission = highCommission === 'on';
+      product.commissionSources = [
+        {
+          name: 'TikTok Komisi',
+          amount: tiktokCommission,
+          rate: 10,
+          icon: 'fab fa-tiktok'
+        },
+        {
+          name: 'iBooming Cashback',
+          amount: iboominCashback,
+          rate: 1.66,
+          icon: 'fas fa-circle'
+        }
+      ];
+      product.totalCommission = totalCommission;
+      product.category = category;
+      product.affiliateLink = affiliateLink;
+      product.isViral = isViral === 'on';
+      product.isHot = isHot === 'on';
+      product.isTopRated = isTopRated === 'on';
+      product.isFeatured = isFeatured === 'on';
+      product.tags = tags ? tags.split(',').map(tag => tag.trim()) : [];
+      product.detailInformation = detailInformation; // Update detail information
+      product.specifications = specifications;       // Update specifications
+      product.howToUse = howToUse;                  // Update how to use steps
+      product.updatedAt = Date.now();
+      
+      console.log('Saving product with details:', {
+        detailInformation: product.detailInformation,
+        specifications: product.specifications,
+        howToUse: product.howToUse
+      });
+      
+      await product.save();
+      
+      req.flash('success', 'Produk berhasil diperbarui');
+      res.redirect('/admin/products');
+    } catch (error) {
+      console.error('Error updating product:', error);
+      req.flash('error', 'Terjadi kesalahan saat memperbarui produk');
+      res.redirect(`/admin/products/edit/${req.params.id}`);
     }
   }
   
@@ -187,75 +351,6 @@ class AdminController {
     }
   }
   
-  // Edit Product Process
-  async postEditProduct(req, res) {
-    try {
-      const productId = req.params.id;
-      const {
-        name, description, price, discountPrice, 
-        commission, category, affiliateLink, 
-        isViral, isHot, isTopRated, isFeatured,
-        tags
-      } = req.body;
-      
-      // Find product
-      const product = await Product.findById(productId);
-      
-      if (!product) {
-        req.flash('error', 'Produk tidak ditemukan');
-        return res.redirect('/admin/products');
-      }
-      
-      // Handle image upload
-      if (req.file) {
-        product.image = `/uploads/${req.file.filename}`;
-      }
-      
-      // Calculate commission sources
-      const totalCommission = parseFloat(commission);
-      const tiktokCommission = totalCommission * 0.4;
-      const iboominCashback = totalCommission * 0.6;
-      
-      // Update product
-      product.name = name;
-      product.description = description;
-      product.price = parseFloat(price);
-      product.discountPrice = parseFloat(discountPrice) || 0;
-      product.commission = parseFloat(commission);
-      product.commissionSources = [
-        {
-          name: 'TikTok Komisi',
-          amount: tiktokCommission,
-          rate: 10,
-          icon: 'fab fa-tiktok'
-        },
-        {
-          name: 'iBooming Cashback',
-          amount: iboominCashback,
-          rate: 1.66,
-          icon: 'fas fa-circle'
-        }
-      ];
-      product.totalCommission = totalCommission;
-      product.category = category;
-      product.affiliateLink = affiliateLink;
-      product.isViral = isViral === 'on';
-      product.isHot = isHot === 'on';
-      product.isTopRated = isTopRated === 'on';
-      product.isFeatured = isFeatured === 'on';
-      product.tags = tags ? tags.split(',').map(tag => tag.trim()) : [];
-      product.updatedAt = Date.now();
-      
-      await product.save();
-      
-      req.flash('success', 'Produk berhasil diperbarui');
-      res.redirect('/admin/products');
-    } catch (error) {
-      console.error('Error updating product:', error);
-      req.flash('error', 'Terjadi kesalahan saat memperbarui produk');
-      res.redirect(`/admin/products/edit/${req.params.id}`);
-    }
-  }
   
   // Delete Product
   async deleteProduct(req, res) {

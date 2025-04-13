@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const { validationResult } = require('express-validator');
+const wishlistService = require('../services/wishlist.service');
 
 class AuthController {
   // Show login page
@@ -173,9 +174,19 @@ class AuthController {
         return res.redirect('/');
       }
       
+      // Get user's wishlist count
+      let wishlistCount = 0;
+      try {
+        const wishlist = await wishlistService.getUserWishlist(req.session.user.id);
+        wishlistCount = wishlist.products.length;
+      } catch (err) {
+        console.error('Error getting wishlist count:', err);
+      }
+      
       res.render('auth/profile', {
         title: 'Profile',
         user,
+        wishlistCount,
         error: req.flash('error'),
         success: req.flash('success')
       });

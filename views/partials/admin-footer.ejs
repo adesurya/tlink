@@ -1,15 +1,21 @@
-<!-- File: views/partials/admin-footer.ejs -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Sidebar toggle for mobile
+      // Sidebar toggle untuk mobile
       const sidebarToggle = document.getElementById('sidebarToggle');
       const adminSidebar = document.getElementById('adminSidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
       
       if (sidebarToggle && adminSidebar) {
         sidebarToggle.addEventListener('click', function() {
           adminSidebar.classList.toggle('active');
+          document.body.classList.toggle('sidebar-open');
+        });
+      }
+      
+      if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', function() {
+          adminSidebar.classList.remove('active');
+          document.body.classList.remove('sidebar-open');
         });
       }
       
@@ -42,17 +48,7 @@
           });
         });
       }
-  
-      // Initialize tooltips
-      const tooltips = document.querySelectorAll('[data-tooltip]');
-      
-      if (tooltips) {
-        tooltips.forEach(tooltip => {
-          tooltip.setAttribute('title', tooltip.getAttribute('data-tooltip'));
-        });
-      }
     });
   </script>
-  <script src="/js/admin.js"></script>
-  </body>
-  </html>
+</body>
+</html>

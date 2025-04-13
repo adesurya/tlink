@@ -5,6 +5,7 @@ const path = require('path');
 const adminController = require('../controllers/admin.controller');
 const { isAdmin } = require('../middlewares/auth.middleware');
 const adminMiddleware = require('../middlewares/admin.middleware');
+const sitemapController = require('../controllers/sitemap.controller');
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -42,9 +43,15 @@ router.get('/dashboard', adminController.getDashboard);
 // Product routes
 router.get('/products', adminController.getProducts);
 router.get('/products/add', adminController.getAddProduct);
-router.post('/products/add', upload.single('image'), adminController.postAddProduct);
+router.post('/products/add', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'additionalImages', maxCount: 5 }
+]), adminController.postAddProduct);
 router.get('/products/edit/:id', adminController.getEditProduct);
-router.post('/products/edit/:id', upload.single('image'), adminController.postEditProduct);
+router.post('/products/edit/:id', upload.fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'additionalImages', maxCount: 5 }
+]), adminController.postEditProduct);
 router.get('/products/delete/:id', adminController.deleteProduct);
 
 // Category routes
@@ -62,6 +69,8 @@ router.post('/users/add', adminController.postAddUser);
 router.get('/users/edit/:id', adminController.getEditUser);
 router.post('/users/edit/:id', adminController.postEditUser);
 router.get('/users/delete/:id', adminController.deleteUser);
+
+router.get('/admin/regenerate-sitemap', isAdmin, sitemapController.regenerateSitemap);
 
 // Tambahkan middleware untuk semua route admin
 router.use(adminMiddleware);

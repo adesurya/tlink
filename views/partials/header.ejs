@@ -1,95 +1,96 @@
 <header class="app-header">
-    <div class="header-top">
-      <div class="logo">
-        <a href="/">
-          <h1>TAPLINK</h1>
-        </a>
-      </div>
-      
-      <div class="search-container">
-        <form action="/products" method="GET">
-          <input type="text" name="search" placeholder="Enter product full name" value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
-          <button type="submit" class="search-btn">
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
-      </div>
-      
-      <div class="notify-icons">
-        <% if (user) { %>
-          <div class="user-profile-container">
-            <a href="#" class="user-profile" id="userProfileToggle">
-              <span class="user-name"><%= user.username %></span>
-              <i class="fas fa-user-circle"></i>
-            </a>
-            
-            <div class="user-dropdown" id="userDropdown">
-              <div class="user-dropdown-header">
-                <% if (user.profileImage) { %>
-                  <img src="<%= user.profileImage %>" alt="<%= user.username %>" class="user-avatar">
-                <% } else { %>
-                  <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
-                <% } %>
-                <div class="user-info">
-                  <h4><%= user.fullName || user.username %></h4>
-                  <p><%= user.email %></p>
-                </div>
-              </div>
-              
-              <div class="user-dropdown-content">
-                <a href="/auth/profile" class="dropdown-item">
-                  <i class="fas fa-user"></i>
-                  <span>Profil Saya</span>
-                </a>
-                
-                <% if (user.role === 'admin') { %>
-                  <a href="/admin/dashboard" class="dropdown-item">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard Admin</span>
-                  </a>
-                <% } %>
-                
-                <div class="dropdown-divider"></div>
-                
-                <a href="/auth/logout" class="dropdown-item logout">
-                  <i class="fas fa-sign-out-alt"></i>
-                  <span>Logout</span>
-                </a>
+  <div class="header-top">
+    <div class="logo">
+      <a href="/">
+        <h1>TAPLINK</h1>
+      </a>
+    </div>
+    
+    <div class="search-container">
+      <form action="/products" method="GET">
+        <input type="text" name="search" placeholder="Cari Produk" value="<%= typeof query !== 'undefined' && query.search ? query.search : '' %>">
+        <button type="submit" class="search-btn">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+    </div>
+    
+    <div class="notify-icons">
+      <% if (user) { %>
+        <div class="user-dropdown-container">
+          <a href="#" class="user-profile-toggle" id="userProfileToggle">
+            <% if (user.profileImage) { %>
+              <div class="user-avatar"><img src="<%= user.profileImage %>" alt="<%= user.username %>"></div>
+            <% } else { %>
+              <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+            <% } %>
+            <span class="user-name"><%= user.username %></span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </a>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <% if (user.profileImage) { %>
+                <div class="user-avatar"><img src="<%= user.profileImage %>" alt="<%= user.username %>"></div>
+              <% } else { %>
+                <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+              <% } %>
+              <div class="user-info">
+                <h4><%= user.fullName || user.username %></h4>
+                <p><%= user.email %></p>
               </div>
             </div>
+            
+            <div class="user-dropdown-content">
+              <a href="/auth/profile" class="dropdown-item">
+                <i class="fas fa-user"></i>
+                <span>Profil Saya</span>
+              </a>
+              
+              <a href="/user/wishlist" class="dropdown-item">
+                <i class="fas fa-heart"></i>
+                <span>Produk Tersimpan</span>
+              </a>
+              
+              <% if (user.role === 'admin') { %>
+                <a href="/admin/dashboard" class="dropdown-item">
+                  <i class="fas fa-tachometer-alt"></i>
+                  <span>Dashboard Admin</span>
+                </a>
+              <% } %>
+              
+              <div class="dropdown-divider"></div>
+              
+              <a href="/auth/logout" class="dropdown-item logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </a>
+            </div>            
           </div>
-        <% } else { %>
-          <a href="/auth/login" class="login-btn">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Login</span>
-          </a>
-        <% } %>
-      </div>
-    
-    <nav class="category-nav" id="mobileNav">
-      <ul>
-        <li class="<%= (typeof active !== 'undefined' && active === 'beauty') ? 'active' : '' %>">
-          <a href="/products/category/beauty">Beauty</a>
-        </li>
-        <li class="<%= (typeof active !== 'undefined' && active === 'fashion') ? 'active' : '' %>">
-          <a href="/products/category/fashion">Fashion</a>
-        </li>
-        <li class="<%= (typeof active !== 'undefined' && active === 'electronics') ? 'active' : '' %>">
-          <a href="/products/category/electronics">Electronics</a>
-        </li>
-        <li class="<%= (typeof active !== 'undefined' && active === 'baby') ? 'active' : '' %>">
-          <a href="/products/category/baby">Baby &amp; Kids</a>
-        </li>
-      </ul>
-    </nav>
-  </header>
-
-  <script>
-    const toggleBtn = document.getElementById("hamburgerToggle");
-    const navMenu = document.getElementById("mobileNav");
+        </div>
+      <% } else { %>
+        <a href="/auth/login" class="login-btn">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Login</span>
+        </a>
+      <% } %>
+    </div>
+  </div>
   
-    // toggleBtn.addEventListener("click", () => {
-    //   navMenu.classList.toggle("show");
-    // });
-  </script>
-  
+  <nav class="category-nav" id="mobileNav">
+    <ul>
+      <li class="<%= (typeof active !== 'undefined' && active === 'beauty') ? 'active' : '' %>">
+        <a href="/products/category/beauty">Beauty</a>
+      </li>
+      <li class="<%= (typeof active !== 'undefined' && active === 'fashion') ? 'active' : '' %>">
+        <a href="/products/category/fashion">Fashion</a>
+      </li>
+      <li class="<%= (typeof active !== 'undefined' && active === 'electronics') ? 'active' : '' %>">
+        <a href="/products/category/electronics">Electronics</a>
+      </li>
+      <li class="<%= (typeof active !== 'undefined' && active === 'baby') ? 'active' : '' %>">
+        <a href="/products/category/baby">Baby &amp; Kids</a>
+      </li>
+    </ul>
+  </nav>
+</header>

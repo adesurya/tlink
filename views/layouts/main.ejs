@@ -1,9 +1,51 @@
+<!-- Update in views/layouts/main.ejs -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> | Taplink SIJAGO AI</title>
+  
+  <!-- Dynamic title tag -->
+  <title><%= typeof title !== 'undefined' ? title : 'Taplink SIJAGO AI' %> | Taplink SIJAGO AI</title>
+  
+  <!-- Basic SEO meta tags -->
+  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Portal produk affiliate SIJAGO AI dengan komisi tinggi. Temukan produk viral, hot, dan top-rated untuk meningkatkan penghasilan Anda.' %>">
+  <meta name="keywords" content="<%= typeof metaKeywords !== 'undefined' ? metaKeywords : 'affiliate, taplink, sijago, komisi, produk viral' %>">
+  <meta name="author" content="Taplink SIJAGO AI">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Canonical URL to prevent duplicate content issues -->
+  <link rel="canonical" href="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : (typeof baseUrl !== 'undefined' ? baseUrl + (typeof currentPath !== 'undefined' ? currentPath : '') : '') %>">
+  
+  <!-- Open Graph meta tags for social media sharing -->
+  <meta property="og:title" content="<%= typeof ogTitle !== 'undefined' ? ogTitle : (typeof title !== 'undefined' ? title : 'Taplink SIJAGO AI') %>">
+  <meta property="og:description" content="<%= typeof ogDescription !== 'undefined' ? ogDescription : (typeof metaDescription !== 'undefined' ? metaDescription : 'Portal produk affiliate SIJAGO AI dengan komisi tinggi. Temukan produk viral, hot, dan top-rated untuk meningkatkan penghasilan Anda.') %>">
+  <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+  <meta property="og:url" content="<%= typeof ogUrl !== 'undefined' ? ogUrl : (typeof canonicalUrl !== 'undefined' ? canonicalUrl : '') %>">
+  <meta property="og:image" content="<%= typeof ogImage !== 'undefined' ? ogImage : (typeof baseUrl !== 'undefined' ? baseUrl + '/images/taplink-share-default.jpg' : '/images/taplink-share-default.jpg') %>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Taplink SIJAGO AI">
+  <meta property="og:locale" content="id_ID">
+  
+  <!-- Twitter Card meta tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof twitterTitle !== 'undefined' ? twitterTitle : (typeof title !== 'undefined' ? title : 'Taplink SIJAGO AI') %>">
+  <meta name="twitter:description" content="<%= typeof twitterDescription !== 'undefined' ? twitterDescription : (typeof metaDescription !== 'undefined' ? metaDescription : 'Portal produk affiliate SIJAGO AI dengan komisi tinggi. Temukan produk viral, hot, dan top-rated untuk meningkatkan penghasilan Anda.') %>">
+  <meta name="twitter:image" content="<%= typeof twitterImage !== 'undefined' ? twitterImage : (typeof ogImage !== 'undefined' ? ogImage : (typeof baseUrl !== 'undefined' ? baseUrl + '/images/taplink-share-default.jpg' : '/images/taplink-share-default.jpg')) %>">
+  
+  <!-- Structured data for rich results in Google -->
+  <% if (typeof structuredData !== 'undefined') { %>
+    <script type="application/ld+json">
+      <%- structuredData %>
+    </script>
+  <% } %>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  
+  <!-- CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/responsive.css">

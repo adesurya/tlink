@@ -84,6 +84,10 @@
                     <% if (product.isFeatured) { %>
                       <span class="badge badge-featured">Featured</span>
                     <% } %>
+                    
+                    <% if (product.highCommission) { %>
+                      <span class="badge badge-commission">High Comm.</span>
+                    <% } %>
                   </div>
                 </td>
                 <td>
@@ -126,6 +130,10 @@
 </div>
 
 <style>
+  .badge-commission {
+    background-color: #fff2cc;
+    color: #e67e22;
+  }
   .product-cell {
     display: flex;
     align-items: center;

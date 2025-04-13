@@ -8,6 +8,7 @@ class ProductService {
     try {
       const skip = (page - 1) * limit;
       const filter = {};
+      let sortOption = { createdAt: -1 }; // Default sort by newest
       
       // Apply category filter if provided
       if (query.category) {
@@ -42,9 +43,28 @@ class ProductService {
         ];
       }
       
+      // Apply sorting based on query parameters
+      if (query.sort) {
+        switch (query.sort) {
+          case 'price-low':
+            sortOption = { price: 1 };
+            break;
+          case 'price-high':
+            sortOption = { price: -1 };
+            break;
+          case 'commission-high':
+            sortOption = { commission: -1 };
+            break;
+          case 'newest':
+          default:
+            sortOption = { createdAt: -1 };
+            break;
+        }
+      }
+      
       const products = await Product.find(filter)
         .populate('category')
-        .sort({ createdAt: -1 })
+        .sort(sortOption)
         .skip(skip)
         .limit(limit);
       
@@ -170,6 +190,40 @@ class ProductService {
       );
     } catch (error) {
       console.error('Error incrementing view count:', error);
+      throw error;
+    }
+  }
+
+  async getHighCommissionProducts(limit = 10) {
+    try {
+      // First try to find products explicitly marked as highCommission
+      let products = await Product.find({ highCommission: true })
+        .populate('category')
+        .sort({ commission: -1 }) // Sort by commission in descending order
+        .limit(limit);
+      
+      // If we don't have enough products marked as highCommission, get more based on commission value
+      if (products.length < limit) {
+        // Determine how many more products we need
+        const additionalNeeded = limit - products.length;
+        
+        // Find products with highest commission that are not already in the list
+        const existingIds = products.map(p => p._id);
+        const additionalProducts = await Product.find({ 
+          _id: { $nin: existingIds },
+          highCommission: { $ne: true } // Exclude products already marked as highCommission
+        })
+          .populate('category')
+          .sort({ commission: -1 })
+          .limit(additionalNeeded);
+        
+        // Combine the products
+        products = [...products, ...additionalProducts];
+      }
+      
+      return products;
+    } catch (error) {
+      console.error('Error fetching high commission products:', error);
       throw error;
     }
   }

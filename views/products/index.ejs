@@ -68,10 +68,44 @@
     <div class="products-grid-container">
       <div class="products-header">
         <h1><%= title %></h1>
-        <div class="products-count">
-          <span><%= total %> products found</span>
+        <div class="products-sort-filter">
+          <div class="products-count">
+            <span><%= total %> products found</span>
+          </div>
+          <div class="sort-filter">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select" class="sort-select" onchange="this.form.submit()" form="filter-form" name="sort">
+              <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Terbaru</option>
+              <option value="price-low" <%= query.sort === 'price-low' ? 'selected' : '' %>>Harga: Rendah ke Tinggi</option>
+              <option value="price-high" <%= query.sort === 'price-high' ? 'selected' : '' %>>Harga: Tinggi ke Rendah</option>
+              <option value="commission-high" <%= query.sort === 'commission-high' ? 'selected' : '' %>>Komisi: Tinggi ke Rendah</option>
+            </select>
+          </div>
         </div>
       </div>
+
+      <!-- Update the form to include the sort parameter -->
+      <form id="filter-form" action="/products" method="GET" style="display: none;">
+        <% if (query.search) { %>
+          <input type="hidden" name="search" value="<%= query.search %>">
+        <% } %>
+        <% if (query.category) { %>
+          <input type="hidden" name="category" value="<%= query.category %>">
+        <% } %>
+        <% if (query.isViral === 'true') { %>
+          <input type="hidden" name="isViral" value="true">
+        <% } %>
+        <% if (query.isHot === 'true') { %>
+          <input type="hidden" name="isHot" value="true">
+        <% } %>
+        <% if (query.isTopRated === 'true') { %>
+          <input type="hidden" name="isTopRated" value="true">
+        <% } %>
+        <% if (query.isFeatured === 'true') { %>
+          <input type="hidden" name="isFeatured" value="true">
+        <% } %>
+        <!-- Sort parameter will be added by the select onChange event -->
+      </form>
       
       <% if (products.length === 0) { %>
         <div class="no-products">
@@ -138,19 +172,46 @@
         <% if (totalPages > 1) { %>
           <div class="pagination">
             <% if (currentPage > 1) { %>
-              <a href="?page=<%= currentPage - 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="prev-page">
+              <a href="?page=<%= currentPage - 1 %><%= query.search ? '&search=' + encodeURIComponent(query.search) : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %><%= query.sort ? '&sort=' + query.sort : '' %>" class="prev-page">
                 <i class="fas fa-chevron-left"></i> Previous
               </a>
             <% } %>
             
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <a href="?page=<%= i %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="page-number <%= currentPage === i ? 'active' : '' %>">
+            <% 
+              let startPage = Math.max(1, currentPage - 2);
+              let endPage = Math.min(totalPages, startPage + 4);
+              
+              if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+              }
+            %>
+            
+            <% if (startPage > 1) { %>
+              <a href="?page=1<%= query.search ? '&search=' + encodeURIComponent(query.search) : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %><%= query.sort ? '&sort=' + query.sort : '' %>" class="page-number">
+                1
+              </a>
+              <% if (startPage > 2) { %>
+                <span class="page-ellipsis">...</span>
+              <% } %>
+            <% } %>
+            
+            <% for(let i = startPage; i <= endPage; i++) { %>
+              <a href="?page=<%= i %><%= query.search ? '&search=' + encodeURIComponent(query.search) : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %><%= query.sort ? '&sort=' + query.sort : '' %>" class="page-number <%= currentPage === i ? 'active' : '' %>">
                 <%= i %>
               </a>
             <% } %>
             
+            <% if (endPage < totalPages) { %>
+              <% if (endPage < totalPages - 1) { %>
+                <span class="page-ellipsis">...</span>
+              <% } %>
+              <a href="?page=<%= totalPages %><%= query.search ? '&search=' + encodeURIComponent(query.search) : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %><%= query.sort ? '&sort=' + query.sort : '' %>" class="page-number">
+                <%= totalPages %>
+              </a>
+            <% } %>
+            
             <% if (currentPage < totalPages) { %>
-              <a href="?page=<%= currentPage + 1 %><%= query.search ? '&search=' + query.search : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %>" class="next-page">
+              <a href="?page=<%= currentPage + 1 %><%= query.search ? '&search=' + encodeURIComponent(query.search) : '' %><%= query.category ? '&category=' + query.category : '' %><%= query.isViral === 'true' ? '&isViral=true' : '' %><%= query.isHot === 'true' ? '&isHot=true' : '' %><%= query.isTopRated === 'true' ? '&isTopRated=true' : '' %><%= query.isFeatured === 'true' ? '&isFeatured=true' : '' %><%= query.sort ? '&sort=' + query.sort : '' %>" class="next-page">
                 Next <i class="fas fa-chevron-right"></i>
               </a>
             <% } %>
