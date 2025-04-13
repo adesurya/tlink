@@ -1,0 +1,71 @@
+<!-- File: views/admin/categories/add.ejs -->
+
+<%- include('../../partials/admin-header') %>
+
+<div class="admin-container">
+  <%- include('../../partials/admin-sidebar', { active: 'categories' }) %>
+  
+  <main class="admin-content">
+    <div class="admin-header">
+      <h1>Tambah Kategori Baru</h1>
+      <p>Lengkapi form berikut untuk menambahkan kategori baru</p>
+    </div>
+    
+    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <%= success %>
+      </div>
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="card">
+      <div class="card-body">
+        <form action="/admin/categories/add" method="POST">
+          <div class="form-row">
+            <div class="form-col form-col-6">
+              <div class="form-group">
+                <label for="name" class="form-label">Nama Kategori <span class="required">*</span></label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Masukkan nama kategori">
+              </div>
+            </div>
+            
+            <div class="form-col form-col-6">
+              <div class="form-group">
+                <label for="icon" class="form-label">Ikon (FontAwesome Class) <span class="required">*</span></label>
+                <input type="text" id="icon" name="icon" class="form-control" required placeholder="Contoh: fas fa-tag">
+                <small>Silakan lihat <a href="https://fontawesome.com/icons" target="_blank">Font Awesome</a> untuk pilihan ikon</small>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="description" class="form-label">Deskripsi</label>
+            <textarea id="description" name="description" class="form-control" placeholder="Masukkan deskripsi kategori" rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="displayOrder" class="form-label">Urutan Tampilan</label>
+            <input type="number" id="displayOrder" name="displayOrder" class="form-control" min="0" placeholder="Contoh: 1">
+            <small>Kategori dengan urutan lebih kecil akan ditampilkan terlebih dahulu</small>
+          </div>
+          
+          <div class="form-actions">
+            <a href="/admin/categories" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Simpan Kategori
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/admin-footer') %>

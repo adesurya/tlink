@@ -1,0 +1,83 @@
+<!-- File: views/admin/categories/index.ejs -->
+
+<%- include('../../partials/admin-header') %>
+
+<div class="admin-container">
+  <%- include('../../partials/admin-sidebar', { active: 'categories' }) %>
+  
+  <main class="admin-content">
+    <div class="admin-table-actions">
+      <div class="admin-table-title">
+        <h2>Manajemen Kategori</h2>
+      </div>
+      
+      <div class="action-btns">
+        <a href="/admin/categories/add" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Tambah Kategori
+        </a>
+      </div>
+    </div>
+    
+    <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <%= success %>
+      </div>
+    <% } %>
+    
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="card">
+      <div class="table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th width="20%">Nama</th>
+              <th width="15%">Slug</th>
+              <th width="30%">Deskripsi</th>
+              <th width="10%">Ikon</th>
+              <th width="10%">Urutan</th>
+              <th width="5%">Status</th>
+              <th width="10%">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (categories && categories.length > 0) { %>
+              <% categories.forEach(category => { %>
+                <tr>
+                  <td data-label="Nama"><%= category.name %></td>
+                  <td data-label="Slug"><%= category.slug %></td>
+                  <td data-label="Deskripsi"><%= category.description ? (category.description.length > 50 ? category.description.substring(0, 50) + '...' : category.description) : '-' %></td>
+                  <td data-label="Ikon"><i class="<%= category.icon %>"></i></td>
+                  <td data-label="Urutan"><%= category.displayOrder %></td>
+                  <td data-label="Status">
+                    <span class="badge <%= category.isActive ? 'badge-active' : 'badge-inactive' %>">
+                      <%= category.isActive ? 'Aktif' : 'Nonaktif' %>
+                    </span>
+                  </td>
+                  <td data-label="Aksi" class="table-action-cell">
+                    <a href="/admin/categories/edit/<%= category._id %>" class="btn btn-sm btn-primary">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="/admin/categories/delete/<%= category._id %>" class="btn btn-sm btn-danger delete-btn">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="7" class="empty-state">Belum ada kategori</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../../partials/admin-footer') %>

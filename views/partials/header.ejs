@@ -17,10 +17,47 @@
       
       <div class="notify-icons">
         <% if (user) { %>
-          <a href="/auth/profile" class="user-profile">
-            <span class="user-name"><%= user.username %></span>
-            <i class="fas fa-user-circle"></i>
-          </a>
+          <div class="user-profile-container">
+            <a href="#" class="user-profile" id="userProfileToggle">
+              <span class="user-name"><%= user.username %></span>
+              <i class="fas fa-user-circle"></i>
+            </a>
+            
+            <div class="user-dropdown" id="userDropdown">
+              <div class="user-dropdown-header">
+                <% if (user.profileImage) { %>
+                  <img src="<%= user.profileImage %>" alt="<%= user.username %>" class="user-avatar">
+                <% } else { %>
+                  <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+                <% } %>
+                <div class="user-info">
+                  <h4><%= user.fullName || user.username %></h4>
+                  <p><%= user.email %></p>
+                </div>
+              </div>
+              
+              <div class="user-dropdown-content">
+                <a href="/auth/profile" class="dropdown-item">
+                  <i class="fas fa-user"></i>
+                  <span>Profil Saya</span>
+                </a>
+                
+                <% if (user.role === 'admin') { %>
+                  <a href="/admin/dashboard" class="dropdown-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard Admin</span>
+                  </a>
+                <% } %>
+                
+                <div class="dropdown-divider"></div>
+                
+                <a href="/auth/logout" class="dropdown-item logout">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Logout</span>
+                </a>
+              </div>
+            </div>
+          </div>
         <% } else { %>
           <a href="/auth/login" class="login-btn">
             <i class="fas fa-sign-in-alt"></i>
@@ -31,9 +68,6 @@
     
     <nav class="category-nav" id="mobileNav">
       <ul>
-        <li class="<%= (typeof active !== 'undefined' && active === 'for-you') ? 'active' : '' %>">
-          <a href="/">For You</a>
-        </li>
         <li class="<%= (typeof active !== 'undefined' && active === 'beauty') ? 'active' : '' %>">
           <a href="/products/category/beauty">Beauty</a>
         </li>
@@ -54,8 +88,8 @@
     const toggleBtn = document.getElementById("hamburgerToggle");
     const navMenu = document.getElementById("mobileNav");
   
-    toggleBtn.addEventListener("click", () => {
-      navMenu.classList.toggle("show");
-    });
+    // toggleBtn.addEventListener("click", () => {
+    //   navMenu.classList.toggle("show");
+    // });
   </script>
   

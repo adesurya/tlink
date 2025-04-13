@@ -1,18 +1,23 @@
+<!-- File: views/partials/admin-header.ejs -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> | iBooming Admin</title>
+  <title><%= typeof title !== 'undefined' ? title : 'Admin Panel' %> | Taplink Admin</title>
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Main CSS -->
   <link rel="stylesheet" href="/css/style.css">
+  <!-- Admin CSS -->
   <link rel="stylesheet" href="/css/admin.css">
 </head>
+
 <body>
   <header class="admin-top-header">
     <div class="logo">
       <a href="/admin/dashboard">
-        <h1>iBooming</h1>
+        <h1>TAPLINK</h1>
         <span>Admin Panel</span>
       </a>
     </div>
@@ -24,12 +29,16 @@
       
       <div class="admin-user-dropdown">
         <div class="admin-user" id="adminUserDropdown">
-          <% if (user.profileImage) { %>
+          <% if (typeof user !== 'undefined' && user && user.profileImage) { %>
             <img src="<%= user.profileImage %>" alt="<%= user.username %>" class="user-avatar">
           <% } else { %>
-            <div class="user-avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+            <div class="user-avatar">
+              <%= typeof user !== 'undefined' && user && user.username ? user.username.charAt(0).toUpperCase() : 'A' %>
+            </div>
           <% } %>
-          <span class="user-name"><%= user.username %></span>
+          <span class="user-name">
+            <%= typeof user !== 'undefined' && user && user.username ? user.username : 'Admin' %>
+          </span>
           <i class="fas fa-chevron-down"></i>
         </div>
         
@@ -49,14 +58,14 @@
     </div>
   </header>
   
-  <% if (error && error.length > 0) { %>
+  <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
     <div class="alert alert-error">
-      <%= error %>
+      <i class="fas fa-exclamation-circle"></i> <%= error %>
     </div>
   <% } %>
   
-  <% if (success && success.length > 0) { %>
+  <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
     <div class="alert alert-success">
-      <%= success %>
+      <i class="fas fa-check-circle"></i> <%= success %>
     </div>
   <% } %>

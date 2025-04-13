@@ -50,7 +50,12 @@ app.use(session({
 
 // Flash messages
 app.use(flash());
-
+app.use((req, res, next) => {
+  // Otomatis sediakan flash messages ke semua view
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
 // Set user in locals
 app.use(setUser);
 

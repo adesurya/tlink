@@ -1,3 +1,6 @@
+// File: controllers/product.controller.js
+
+const mongoose = require('mongoose');
 const productService = require('../services/product.service');
 const affiliateService = require('../services/affiliate.service');
 const Category = require('../models/category.model');
@@ -18,7 +21,8 @@ class ProductController {
         currentPage,
         totalPages,
         total,
-        query: req.query
+        query: req.query,
+        req: req
       });
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -64,7 +68,9 @@ class ProductController {
       res.render('products/detail', {
         title: product.name,
         product: formattedProduct,
-        relatedProducts: formattedRelatedProducts
+        relatedProducts: formattedRelatedProducts,
+        user: req.session.user,
+        req: req
       });
     } catch (error) {
       console.error('Error fetching product details:', error);
@@ -83,7 +89,9 @@ class ProductController {
       }
       
       // Track the click with user info from session
-      affiliateService.trackAffiliateClick(productId, req.session.user.id);
+      if (req.session.user && req.session.user.id) {
+        affiliateService.trackAffiliateClick(productId, req.session.user.id);
+      }
       
       // Redirect to the affiliate link
       res.redirect(product.affiliateLink);
@@ -96,16 +104,26 @@ class ProductController {
   // Display category products
   async getCategoryProducts(req, res) {
     try {
-      const categoryId = req.params.id;
+      // Ambil parameter dari URL
+      const categoryParam = req.params.id;
       const page = parseInt(req.query.page) || 1;
       
-      const category = await Category.findById(categoryId);
+      // Coba cari kategori berdasarkan ID atau slug
+      let category;
+      
+      // Cek jika parameter adalah ObjectId valid
+      if (mongoose.Types.ObjectId.isValid(categoryParam)) {
+        category = await Category.findById(categoryParam);
+      } else {
+        // Jika bukan ObjectId valid, coba cari berdasarkan slug
+        category = await Category.findOne({ slug: categoryParam });
+      }
       
       if (!category) {
         return res.status(404).render('404', { title: '404 - Category Not Found' });
       }
       
-      const { products, currentPage, totalPages, total } = await productService.getProductsByCategory(categoryId, page);
+      const { products, currentPage, totalPages, total } = await productService.getProductsByCategory(category._id, page);
       const categories = await Category.find({ isActive: true }).sort({ displayOrder: 1 });
       
       res.render('products/category', {
@@ -115,7 +133,9 @@ class ProductController {
         categories,
         currentPage,
         totalPages,
-        total
+        total,
+        req: req,
+        user: req.session.user
       });
     } catch (error) {
       console.error('Error fetching category products:', error);
@@ -132,7 +152,9 @@ class ProductController {
       res.render('products/viral', {
         title: 'Viral Products',
         products: viralProducts,
-        categories
+        categories,
+        req: req,
+        user: req.session.user
       });
     } catch (error) {
       console.error('Error fetching viral products:', error);
@@ -149,7 +171,9 @@ class ProductController {
       res.render('products/hot', {
         title: 'Hot Products',
         products: hotProducts,
-        categories
+        categories,
+        req: req,
+        user: req.session.user
       });
     } catch (error) {
       console.error('Error fetching hot products:', error);
@@ -166,7 +190,9 @@ class ProductController {
       res.render('products/top-rated', {
         title: 'Top Rated Products',
         products: topRatedProducts,
-        categories
+        categories,
+        req: req,
+        user: req.session.user
       });
     } catch (error) {
       console.error('Error fetching top rated products:', error);

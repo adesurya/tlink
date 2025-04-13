@@ -18,6 +18,9 @@ router.get('/top-rated', productController.getTopRatedProducts);
 // Get products by category
 router.get('/category/:id', productController.getCategoryProducts);
 
+// Get products by category (menggunakan :slug bukan :id)
+router.get('/category/:slug', productController.getCategoryProducts);
+
 // Get product detail
 router.get('/:id', productController.getProductDetail);
 

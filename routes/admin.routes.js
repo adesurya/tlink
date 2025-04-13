@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const adminController = require('../controllers/admin.controller');
 const { isAdmin } = require('../middlewares/auth.middleware');
+const adminMiddleware = require('../middlewares/admin.middleware');
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -61,5 +62,8 @@ router.post('/users/add', adminController.postAddUser);
 router.get('/users/edit/:id', adminController.getEditUser);
 router.post('/users/edit/:id', adminController.postEditUser);
 router.get('/users/delete/:id', adminController.deleteUser);
+
+// Tambahkan middleware untuk semua route admin
+router.use(adminMiddleware);
 
 module.exports = router;

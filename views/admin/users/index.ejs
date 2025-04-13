@@ -63,7 +63,7 @@
                   <a href="/admin/users/edit/<%= user._id %>" class="btn btn-sm btn-primary">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <% if (user._id.toString() !== currentUser.id) { %>
+                  <% if (typeof currentUser === 'undefined' || (user._id && user._id.toString() !== (currentUser && currentUser.id ? currentUser.id : ''))) { %>
                     <a href="/admin/users/delete/<%= user._id %>" class="btn btn-sm btn-danger delete-btn">
                       <i class="fas fa-trash"></i>
                     </a>

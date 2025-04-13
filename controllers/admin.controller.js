@@ -24,22 +24,26 @@ class AdminController {
         .sort({ createdAt: -1 })
         .limit(5);
       
-      res.render('admin/dashboard', {
-        title: 'Admin Dashboard',
-        totalProducts,
-        totalCategories,
-        totalUsers,
-        totalAdmins,
-        latestProducts,
-        latestUsers,
-        formatCurrency
-      });
-    } catch (error) {
-      console.error('Error loading admin dashboard:', error);
-      req.flash('error', 'Terjadi kesalahan saat memuat dashboard');
-      res.redirect('/');
+        res.render('admin/dashboard', {
+            title: 'Admin Dashboard',
+            totalProducts,
+            totalCategories,
+            totalUsers,
+            totalAdmins,
+            latestProducts,
+            latestUsers,
+            formatCurrency,
+            user: req.session.user,  // Pastikan selalu mengirim objek user
+            currentUser: req.session.user, // Untuk template yang mengharapkan currentUser
+            error: req.flash('error'),
+            success: req.flash('success')
+          });
+        } catch (error) {
+          console.error('Error loading admin dashboard:', error);
+          req.flash('error', 'Terjadi kesalahan saat memuat dashboard');
+          res.redirect('/');
+        }
     }
-  }
   
   // Product Management
   async getProducts(req, res) {
@@ -61,7 +65,10 @@ class AdminController {
         currentPage: page,
         totalPages: Math.ceil(totalProducts / limit),
         totalProducts,
-        formatCurrency
+        formatCurrency,
+        // Tambahkan nilai default untuk flash message
+        success: req.flash('success'),
+        error: req.flash('error')
       });
     } catch (error) {
       console.error('Error loading admin products:', error);
@@ -445,6 +452,7 @@ class AdminController {
         currentPage: page,
         totalPages: Math.ceil(totalUsers / limit),
         totalUsers,
+        currentUser: req.session.user, // Tambahkan ini
         error: req.flash('error'),
         success: req.flash('success')
       });

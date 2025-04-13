@@ -18,7 +18,8 @@ const isAuth = (req, res, next) => {
     }
     
     if (req.session.user.role !== 'admin') {
-      req.flash('error', 'Anda tidak memiliki akses');
+      console.log('User role check failed. User role:', req.session.user.role);
+      req.flash('error', 'Anda tidak memiliki akses ke halaman admin');
       return res.redirect('/');
     }
     

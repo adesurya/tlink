@@ -71,12 +71,21 @@ taplink-affiliate-app/
    mkdir -p public/images/products
    ```
 
-6. Jalankan seed script untuk membuat data dummy:
+6. **Jalankan seed script untuk membuat data dummy dan user admin default**:
    ```bash
-   node seed/seed-data.js
+   npm run setup
+   ```
+   
+   Atau jalankan secara terpisah:
+   ```bash
+   # Untuk membuat data produk dan kategori
+   npm run seed
+   
+   # Untuk membuat user admin default
+   npm run seed:admin
    ```
 
-7. Jalankan aplikasi:
+7. **Jalankan aplikasi**:
    ```bash
    npm start
    ```
@@ -86,7 +95,12 @@ taplink-affiliate-app/
    npm run dev
    ```
 
-8. Buka browser dan akses `http://localhost:3000`
+8. **Buka browser dan akses `http://localhost:3000`**
+
+9. **Login sebagai admin**:
+   - Username: admin
+   - Password: admin123
+   - URL: `http://localhost:3000/auth/login`
 
 ## Konfigurasi Deployment
 
