@@ -1,0 +1,139 @@
+<!-- views/admin/blog/index.ejs -->
+<%- include('../../partials/admin-header') %>
+
+<div class="admin-container">
+  <%- include('../../partials/admin-sidebar', { active: 'blog' }) %>
+  
+  <main class="admin-content">
+    <div class="admin-table-actions">
+      <div class="admin-table-title">
+        <h2>Manage Product Reviews</h2>
+      </div>
+      
+      <div class="action-btns">
+        <a href="/admin/blog/add" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Add New Review
+        </a>
+      </div>
+    </div>
+    
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success">
+        <i class="fas fa-check-circle"></i> <%= success %>
+      </div>
+    <% } %>
+    
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Views</th>
+            <th>Date Published</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (posts && posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+              <tr>
+                <td>
+                  <div class="post-cell">
+                    <img src="<%= post.thumbnail %>" alt="<%= post.title %>" class="post-thumbnail">
+                    <div class="post-info">
+                      <div class="post-title"><%= post.title.length > 50 ? post.title.substring(0, 50) + '...' : post.title %></div>
+                      <div class="post-author"><small>By: <%= post.author ? post.author.username : 'Admin' %></small></div>
+                    </div>
+                  </div>
+                </td>
+                <td><%= post.category ? post.category.name : 'Uncategorized' %></td>
+                <td>
+                  <span class="badge <%= post.isPublished ? 'badge-active' : 'badge-inactive' %>">
+                    <%= post.isPublished ? 'Published' : 'Draft' %>
+                  </span>
+                </td>
+                <td><%= post.viewCount.toLocaleString() %></td>
+                <td><%= post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('id-ID') : '-' %></td>
+                <td class="table-action-cell">
+                  <a href="/blog/post/<%= post.slug %>" class="btn btn-sm btn-secondary" target="_blank">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="/admin/blog/edit/<%= post._id %>" class="btn btn-sm btn-primary">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a href="/admin/blog/delete/<%= post._id %>" class="btn btn-sm btn-danger delete-btn">
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" class="no-data">No product reviews found. Click "Add New Review" to create one.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    
+    <% if (totalPages > 1) { %>
+      <div class="admin-pagination">
+        <% for(let i = 1; i <= totalPages; i++) { %>
+          <div class="page-item <%= currentPage === i ? 'active' : '' %>">
+            <a href="/admin/blog?page=<%= i %>" class="page-link"><%= i %></a>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+  </main>
+</div>
+
+<style>
+  .post-cell {
+    display: flex;
+    align-items: center;
+  }
+  
+  .post-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+  }
+  
+  .post-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .post-title {
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  
+  .post-author {
+    font-size: 12px;
+    color: #666;
+  }
+  
+  .badge-active {
+    background-color: #e6f7e6;
+    color: #27ae60;
+  }
+  
+  .badge-inactive {
+    background-color: #f5f5f8;
+    color: #666;
+  }
+</style>
+
+<%- include('../../partials/admin-footer') %>

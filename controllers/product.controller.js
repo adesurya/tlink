@@ -54,13 +54,22 @@ class ProductController {
       }
       
       // Format commission for display
+      // Calculate the actual commission amount based on percentage
+      const actualPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
+      const actualCommissionAmount = (actualPrice * product.commission) / 100;
+      
       const formattedProduct = {
         ...product.toObject(),
-        formattedTotalCommission: formatCurrency(product.totalCommission),
-        commissionSources: product.commissionSources.map(source => ({
-          ...source,
-          formattedAmount: formatCurrency(source.amount)
-        }))
+        formattedTotalCommission: formatCurrency(actualCommissionAmount),
+        formattedPrice: formatCurrency(product.price),
+        formattedDiscountPrice: product.discountPrice > 0 ? formatCurrency(product.discountPrice) : null,
+        commissionPercentage: product.commission, // Add the original commission percentage
+        commissionSources: product.commissionSources && product.commissionSources.length > 0 
+          ? product.commissionSources.map(source => ({
+              ...source,
+              formattedAmount: formatCurrency(source.amount)
+            }))
+          : []
       };
       
       // Get related products

@@ -1,0 +1,25 @@
+<!-- views/home/index.ejs -->
+<!-- This file should include the essential structure of your homepage -->
+
+<!-- Banner/Slider Section -->
+<%- include('./banner-section') %>
+
+<!-- Featured Categories Section -->
+<%- include('./categories-section') %>
+
+<!-- Featured Products Section -->
+<%- include('./featured-products-section') %>
+
+<!-- New Arrivals Section -->
+<%- include('./new-arrivals-section') %>
+
+<!-- Product Reviews Section (Blog Posts) -->
+<% if (typeof recentBlogPosts !== 'undefined' && recentBlogPosts && recentBlogPosts.length > 0) { %>
+  <%- include('./product-reviews-section') %>
+<% } %>
+
+<!-- Bestsellers Section -->
+<%- include('./bestsellers-section') %>
+
+<!-- Testimonials or Features Section -->
+<%- include('./features-section') %>

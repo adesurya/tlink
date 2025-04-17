@@ -76,10 +76,23 @@
         <% if (product.highCommission) { %>
           <div class="high-commission-badge">Komisi Tinggi</div>
         <% } %>
-        <div class="total-commission">Dapatkan <span class="commission-value"><%= product.formattedTotalCommission %></span>/pcs</div>
+        <div class="total-commission">
+          <div class="price-info">
+            <% if (product.formattedDiscountPrice) { %>
+              <span class="product-original-price"><%= product.formattedPrice %></span>
+              <span class="product-price"><%= product.formattedDiscountPrice %></span>
+            <% } else { %>
+              <span class="product-price"><%= product.formattedPrice %></span>
+            <% } %>
+          </div>
+          <div class="commission-info">
+            Dapatkan komisi <span class="commission-value"><%= product.formattedTotalCommission %></span>/pcs 
+            <span class="commission-percentage">(<%= product.commissionPercentage %>%)</span>
+          </div>
+        </div>
       </div>
       
-      <div class="commission-details">
+      <!-- <div class="commission-details">
         <% if (product.commissionSources && product.commissionSources.length > 0) { %>
           <div class="commission-source tiktok">
             <div class="source-logo">
@@ -112,11 +125,11 @@
             </div>
             <div class="source-amount">
               <div class="amount-value"><%= product.formattedTotalCommission %></div>
-              <div class="amount-rate">Tarif Komisi: <%= product.commission %>%</div>
+              <div class="amount-rate">Tarif Komisi: <%= product.commissionPercentage %>%</div>
             </div>
           </div>
         <% } %>
-      </div>
+      </div> -->
     </div>
 </div>
     
@@ -284,7 +297,34 @@
   </div>
   
   <style>
+/* Add these styles to the existing CSS */
+.price-info {
+  margin-bottom: 5px;
+}
 
+.product-original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.product-price {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+}
+
+.commission-info {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.commission-percentage {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
+}
 .share-btn, .refresh-btn {
     width: 30px;
     height: 30px;
@@ -578,7 +618,7 @@
     }
     
     .product-slider {
-      background-color: #f8e1e8;
+      background-color: #c8c3c3;
       padding: 50px 15px 20px;
       border-radius: 0 0 15px 15px;
     }

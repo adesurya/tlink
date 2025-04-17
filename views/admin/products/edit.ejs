@@ -4,221 +4,467 @@
   <%- include('../../partials/admin-sidebar', { active: 'products' }) %>
   
   <main class="admin-content">
-    <div class="admin-header">
-      <h1>Edit Produk</h1>
-      <p>Perbarui informasi produk</p>
-    </div>
-    
-    <div class="admin-form">
-      <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
-        <div class="form-row">
-          <div class="form-group form-group-full">
-            <label for="name">Nama Produk <span class="required">*</span></label>
-            <input type="text" id="name" name="name" required value="<%= product.name %>" placeholder="Masukkan nama produk">
-          </div>
-        </div>
+    <!-- Form Submission Result (hidden) -->
+    <div id="form-submit-result" data-result="<%= success ? 'success' : (error ? 'error' : '') %>" data-message="<%= success || error || '' %>" style="display: none;"></div>
         
-        <div class="form-row">
-          <div class="form-group">
-            <label for="category">Kategori <span class="required">*</span></label>
-            <select id="category" name="category" required>
-              <option value="">Pilih Kategori</option>
-              <% categories.forEach(category => { %>
-                <option value="<%= category._id %>" <%= product.category && product.category.equals(category._id) ? 'selected' : '' %>><%= category.name %></option>
-              <% }); %>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="image">Gambar Utama Produk</label>
-            <div class="main-image-preview">
-              <img src="<%= product.image %>" alt="<%= product.name %>" class="current-image">
-            </div>
-            <input type="file" id="image" name="image" accept="image/*">
-            <small>Biarkan kosong jika tidak ingin mengubah gambar utama</small>
-          </div>
+    <div class="modern-form-container">
+      <div class="modern-form-header">
+        <div>
+          <h2>Edit Product</h2>
+          <p>Update product information for: <%= product.name %></p>
         </div>
-
-        <div class="form-group form-group-full">
-          <label for="additionalImages">Gambar Tambahan (Max 5)</label>
-          <div class="additional-images-container">
-            <% if (product.images && product.images.length > 0) { %>
-              <% product.images.forEach((img, index) => { %>
-                <div class="additional-image">
-                  <img src="<%= img %>" alt="Additional Image <%= index + 1 %>">
-                  <div class="image-actions">
-                    <input type="hidden" name="existingImages[]" value="<%= img %>">
-                    <button type="button" class="remove-image-btn" data-image="<%= img %>">
-                      <i class="fas fa-trash"></i>
-                    </button>
+        <div class="header-actions">
+          <a href="/products/<%= product._id %>" target="_blank" class="btn btn-secondary btn-sm">
+            <i class="fas fa-eye"></i> View Product
+          </a>
+        </div>
+      </div>
+      
+      <div class="modern-form-body">
+        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" class="modern-form">
+          <!-- Basic Information Section -->
+          <div class="form-section" id="basic-info">
+            <div class="form-section-header">
+              <h3>Basic Information</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            
+            <div class="form-section-content">
+              <div class="form-grid">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="name" class="required">Product Name</label>
+                    <input type="text" id="name" name="name" class="form-input" required value="<%= product.name %>" placeholder="Enter product name">
                   </div>
                 </div>
-              <% }); %>
-            <% } else { %>
-              <p class="no-images">Belum ada gambar tambahan</p>
-            <% } %>
-          </div>
-          <input type="file" id="additionalImages" name="additionalImages" accept="image/*" multiple>
-          <small>Format: JPG, PNG, GIF. Max 5MB per gambar</small>
-          <div class="image-preview-container" id="imagePreviewContainer"></div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="price">Harga <span class="required">*</span></label>
-            <input type="number" id="price" name="price" required min="0" step="0.01" value="<%= product.price %>" placeholder="Contoh: 100.00">
+                
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="category" class="required">Category</label>
+                    <div class="elegant-select-wrapper">
+                      <select id="category" name="category" class="form-input" required>
+                        <option value="">Select Category</option>
+                        <% categories.forEach(category => { %>
+                          <option value="<%= category._id %>" <%= product.category && product.category.equals(category._id) ? 'selected' : '' %>><%= category.name %></option>
+                        <% }); %>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="affiliateLink" class="required">Affiliate Link</label>
+                    <input type="url" id="affiliateLink" name="affiliateLink" class="form-input" required value="<%= product.affiliateLink %>" placeholder="https://example.com/product">
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <div class="tag-input-container" id="tag-container">
+                      <input type="text" id="tag-input" class="tag-input" placeholder="Add tags...">
+                    </div>
+                    <input type="hidden" id="tags" name="tags" value="<%= product.tags ? product.tags.join(', ') : '' %>">
+                    <div class="form-help">Add tags separated by commas or press Enter after each tag</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div class="form-group">
-            <label for="discountPrice">Harga Diskon</label>
-            <input type="number" id="discountPrice" name="discountPrice" min="0" step="0.01" value="<%= product.discountPrice || '' %>" placeholder="Contoh: 80.00">
-            <small>Kosongkan jika tidak ada diskon</small>
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="commission">Komisi (%) <span class="required">*</span></label>
-            <input type="number" id="commission" name="commission" required min="0" max="100" step="0.1" value="<%= product.commission %>" placeholder="Contoh: 10.5">
-          </div>
-          
-          <div class="form-group">
-            <label for="affiliateLink">Link Affiliate <span class="required">*</span></label>
-            <input type="url" id="affiliateLink" name="affiliateLink" required value="<%= product.affiliateLink %>" placeholder="https://example.com/product">
-          </div>
-        </div>
-
-        <div class="form-group form-group-full">
-          <label for="tags">Tags</label>
-          <input type="text" id="tags" name="tags" value="<%= product.tags ? product.tags.join(', ') : '' %>" placeholder="Contoh: fashion, baju, wanita">
-          <small>Pisahkan dengan koma</small>
-        </div>
-        
-        <div class="form-group form-group-full">
-          <label for="description">Deskripsi Produk <span class="required">*</span></label>
-          <textarea id="description" name="description" required placeholder="Masukkan deskripsi produk"><%= product.description %></textarea>
-        </div>
-       
-        <div class="form-card">
-          <div class="form-card-header">
-            <h3>Informasi Detail Produk</h3>
-          </div>
-          <div class="form-card-body">
-            <div class="form-group form-group-full">
-              <label for="detailInformation">Detail Produk</label>
-              <textarea id="detailInformation" name="detailInformation" rows="5" placeholder="Masukkan deskripsi detail produk"><%= product.detailInformation || '' %></textarea>
-              <small>Anda dapat menggunakan format Markdown untuk konten yang lebih kaya</small>
+          <!-- Pricing & Commission -->
+          <div class="form-section" id="pricing-info">
+            <div class="form-section-header">
+              <h3>Pricing & Commission</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             
-            <div class="form-group form-group-full">
-              <label>Spesifikasi Produk</label>
-              <div id="specifications-container">
-                <% if (product.specifications && product.specifications.length > 0) { %>
-                  <% product.specifications.forEach(spec => { %>
-                    <div class="specification-item">
-                      <div class="spec-inputs">
-                        <input type="text" name="specLabel[]" value="<%= spec.label %>" placeholder="Label (contoh: Bahan)" required>
-                        <input type="text" name="specValue[]" value="<%= spec.value %>" placeholder="Nilai (contoh: Katun)" required>
+            <div class="form-section-content">
+              <div class="form-grid">
+                <div class="col-4">
+                  <div class="form-group">
+                    <label for="price" class="required">Regular Price</label>
+                    <div class="input-group">
+                      <div class="input-group-text">Rp</div>
+                      <input type="number" id="price" name="price" class="form-input" required min="0" step="0.01" value="<%= product.price %>" placeholder="100.00">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-4">
+                  <div class="form-group">
+                    <label for="discountPrice">Discount Price</label>
+                    <div class="input-group">
+                      <div class="input-group-text">Rp</div>
+                      <input type="number" id="discountPrice" name="discountPrice" class="form-input" min="0" step="0.01" value="<%= product.discountPrice || '' %>" placeholder="80.00">
+                    </div>
+                    <div class="form-help">Leave empty if not on discount</div>
+                  </div>
+                </div>
+                
+                <div class="col-4">
+                  <div class="form-group">
+                    <label for="commission" class="required">Commission (%)</label>
+                    <div class="input-group">
+                      <input type="number" id="commission" name="commission" class="form-input" required min="0" max="100" step="0.1" value="<%= product.commission %>" placeholder="10.5">
+                      <div class="input-group-text">%</div>
+                    </div>
+                    <div class="form-help">Percentage of the product price</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="custom-checkbox">
+                      <input type="checkbox" id="highCommission" name="highCommission" <%= product.highCommission ? 'checked' : '' %>>
+                      <span class="checkbox-icon"><i class="fas fa-check"></i></span>
+                      <span class="checkbox-label">Flag as High Commission Product</span>
+                    </label>
+                    <div class="form-help">High commission products are featured in the "High Commission Products" section on the home page</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Product Images -->
+          <div class="form-section" id="images-info">
+            <div class="form-section-header">
+              <h3>Product Images</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            
+            <div class="form-section-content">
+              <div class="form-grid">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="image">Main Product Image</label>
+                    <div class="current-image-preview">
+                      <div class="image-preview-item main-image">
+                        <img src="<%= product.image %>" alt="<%= product.name %>">
+                        <div class="image-caption">Current Main Image</div>
                       </div>
-                      <button type="button" class="btn-remove-spec">
+                    </div>
+                    
+                    <div class="dropzone" id="main-image-dropzone">
+                      <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+                      <div class="dropzone-text">Drag & drop to replace main image</div>
+                      <div class="dropzone-subtext">or click to browse files (JPG, PNG, GIF up to 5MB)</div>
+                      <input type="file" id="image" name="image" accept="image/*" hidden>
+                    </div>
+                    <div id="main-image-preview" class="image-preview-container"></div>
+                    <div class="form-help">Leave empty to keep the current main image</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-group">
+                    <label>Additional Images</label>
+                    <% if (product.images && product.images.length > 0) { %>
+                      <div class="existing-images-grid">
+                        <% product.images.forEach((image, index) => { %>
+                          <div class="existing-image" id="existing-image-<%= index %>">
+                            <img src="<%= image %>" alt="Additional Image <%= index + 1 %>">
+                            <div class="image-actions">
+                              <input type="hidden" name="existingImages[]" value="<%= image %>">
+                              <input type="checkbox" name="deleteImages[]" value="<%= image %>" id="delete-image-<%= index %>" class="remove-image-checkbox" style="display: none;">
+                              <button type="button" class="remove-image-btn" data-index="<%= index %>">
+                                <i class="fas fa-trash"></i> Remove
+                              </button>
+                            </div>
+                          </div>
+                        <% }); %>
+                      </div>
+                    <% } else { %>
+                      <p class="no-images">No additional images available</p>
+                    <% } %>
+                    
+                    <div class="dropzone" id="additional-images-dropzone">
+                      <i class="fas fa-images dropzone-icon"></i>
+                      <div class="dropzone-text">Drag & drop to add more images</div>
+                      <div class="dropzone-subtext">or click to browse files (Max 5 images total, JPG, PNG, GIF up to 5MB each)</div>
+                      <input type="file" id="additionalImages" name="additionalImages" accept="image/*" multiple hidden>
+                    </div>
+                    <div id="additional-images-preview" class="image-preview-container"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Description & Details -->
+          <div class="form-section" id="description-info">
+            <div class="form-section-header">
+              <h3>Description & Details</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            
+            <div class="form-section-content">
+              <div class="form-grid">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="description" class="required">Short Description</label>
+                    <textarea id="description" name="description" class="form-input" required placeholder="Enter a brief description of the product"><%= product.description %></textarea>
+                    <div class="form-help">A concise description displayed in product cards (max 200 characters recommended)</div>
+                  </div>
+                </div>
+                
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="detailInformation">Detailed Information</label>
+                    <div class="wysiwyg-editor" id="detail-editor">
+                      <div class="editor-toolbar">
+                        <!-- Toolbar buttons will be added by JS -->
+                      </div>
+                      <div class="editor-content" contenteditable="true"><%= product.detailInformation || '' %></div>
+                    </div>
+                    <textarea id="detailInformation" name="detailInformation" hidden><%= product.detailInformation || '' %></textarea>
+                    <div class="form-help">Comprehensive product information displayed on the product detail page</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Specifications -->
+          <div class="form-section" id="specifications-info">
+            <div class="form-section-header">
+              <h3>Product Specifications</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            
+            <div class="form-section-content">
+              <div class="form-group">
+                <label>Specifications</label>
+                <div class="dynamic-list" id="specifications-container">
+                  <% if (product.specifications && product.specifications.length > 0) { %>
+                    <% product.specifications.forEach(spec => { %>
+                      <div class="dynamic-list-item">
+                        <div class="inputs">
+                          <input type="text" name="specLabel[]" class="form-input" value="<%= spec.label %>" placeholder="Label (e.g., Material)" required>
+                          <input type="text" name="specValue[]" class="form-input" value="<%= spec.value %>" placeholder="Value (e.g., Cotton)" required>
+                        </div>
+                        <button type="button" class="remove-item-btn">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    <% }); %>
+                  <% } else { %>
+                    <div class="dynamic-list-item">
+                      <div class="inputs">
+                        <input type="text" name="specLabel[]" class="form-input" placeholder="Label (e.g., Material)" required>
+                        <input type="text" name="specValue[]" class="form-input" placeholder="Value (e.g., Cotton)" required>
+                      </div>
+                      <button type="button" class="remove-item-btn">
                         <i class="fas fa-times"></i>
                       </button>
                     </div>
-                  <% }); %>
-                <% } else { %>
-                  <!-- Default empty specification -->
-                  <div class="specification-item">
-                    <div class="spec-inputs">
-                      <input type="text" name="specLabel[]" placeholder="Label (contoh: Bahan)" required>
-                      <input type="text" name="specValue[]" placeholder="Nilai (contoh: Katun)" required>
-                    </div>
-                    <button type="button" class="btn-remove-spec">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                <% } %>
+                  <% } %>
+                </div>
+                <button type="button" id="add-spec-btn" class="add-item-btn">
+                  <i class="fas fa-plus"></i> Add Specification
+                </button>
               </div>
-              <button type="button" id="add-specification" class="btn btn-sm btn-secondary mt-2">
-                <i class="fas fa-plus"></i> Tambah Spesifikasi
-              </button>
+            </div>
+          </div>
+          
+          <!-- Usage Instructions -->
+          <div class="form-section" id="usage-info">
+            <div class="form-section-header">
+              <h3>Usage Instructions</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             
-            <div class="form-group form-group-full">
-              <label>Cara Penggunaan</label>
-              <div id="how-to-use-container">
-                <% if (product.howToUse && product.howToUse.length > 0) { %>
-                  <% product.howToUse.forEach((step, index) => { %>
-                    <div class="how-to-use-item">
-                      <div class="step-input">
-                        <span class="step-number"><%= index + 1 %></span>
-                        <input type="text" name="howToUse[]" value="<%= step %>" placeholder="Langkah penggunaan" required>
+            <div class="form-section-content">
+              <div class="form-group">
+                <label>How To Use Steps</label>
+                <div class="dynamic-list" id="howToUse-container">
+                  <% if (product.howToUse && product.howToUse.length > 0) { %>
+                    <% product.howToUse.forEach((step, index) => { %>
+                      <div class="dynamic-list-item">
+                        <div class="step-number"><%= index + 1 %></div>
+                        <div class="inputs">
+                          <input type="text" name="howToUse[]" class="form-input" value="<%= step %>" placeholder="Usage step" required>
+                        </div>
+                        <button type="button" class="remove-item-btn">
+                          <i class="fas fa-times"></i>
+                        </button>
                       </div>
-                      <button type="button" class="btn-remove-step">
+                    <% }); %>
+                  <% } else { %>
+                    <div class="dynamic-list-item">
+                      <div class="step-number">1</div>
+                      <div class="inputs">
+                        <input type="text" name="howToUse[]" class="form-input" placeholder="Usage step" required>
+                      </div>
+                      <button type="button" class="remove-item-btn">
                         <i class="fas fa-times"></i>
                       </button>
                     </div>
-                  <% }); %>
-                <% } else { %>
-                  <!-- Default empty step -->
-                  <div class="how-to-use-item">
-                    <div class="step-input">
-                      <span class="step-number">1</span>
-                      <input type="text" name="howToUse[]" placeholder="Langkah penggunaan" required>
-                    </div>
-                    <button type="button" class="btn-remove-step">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                <% } %>
+                  <% } %>
+                </div>
+                <button type="button" id="add-step-btn" class="add-item-btn">
+                  <i class="fas fa-plus"></i> Add Step
+                </button>
               </div>
-              <button type="button" id="add-step" class="btn btn-sm btn-secondary mt-2">
-                <i class="fas fa-plus"></i> Tambah Langkah
-              </button>
             </div>
           </div>
-        </div>
-
-        <div class="form-group form-group-full">
-          <label>Status Produk</label>
           
-          <div class="checkbox-container">
-            <div class="checkbox-group">
-              <input type="checkbox" id="isViral" name="isViral" <%= product.isViral ? 'checked' : '' %>>
-              <label for="isViral">Viral Product</label>
+          <!-- Product Status -->
+          <div class="form-section" id="status-info">
+            <div class="form-section-header">
+              <h3>Product Status</h3>
+              <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             
-            <div class="checkbox-group">
-              <input type="checkbox" id="isHot" name="isHot" <%= product.isHot ? 'checked' : '' %>>
-              <label for="isHot">Hot Product</label>
-            </div>
-            
-            <div class="checkbox-group">
-              <input type="checkbox" id="isTopRated" name="isTopRated" <%= product.isTopRated ? 'checked' : '' %>>
-              <label for="isTopRated">Top Rated</label>
-            </div>
-            
-            <div class="checkbox-group">
-              <input type="checkbox" id="isFeatured" name="isFeatured" <%= product.isFeatured ? 'checked' : '' %>>
-              <label for="isFeatured">Featured</label>
-            </div>
-            
-            <div class="checkbox-group">
-              <input type="checkbox" id="highCommission" name="highCommission" <%= product.highCommission ? 'checked' : '' %>>
-              <label for="highCommission">Komisi Tinggi</label>
+            <div class="form-section-content">
+              <div class="form-group">
+                <label>Product Status Settings</label>
+                <div class="control-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="isViral" name="isViral" <%= product.isViral ? 'checked' : '' %>>
+                    <span class="checkbox-icon"><i class="fas fa-check"></i></span>
+                    <span class="checkbox-label">Viral Product</span>
+                  </label>
+                  
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="isHot" name="isHot" <%= product.isHot ? 'checked' : '' %>>
+                    <span class="checkbox-icon"><i class="fas fa-check"></i></span>
+                    <span class="checkbox-label">Hot Product</span>
+                  </label>
+                  
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="isTopRated" name="isTopRated" <%= product.isTopRated ? 'checked' : '' %>>
+                    <span class="checkbox-icon"><i class="fas fa-check"></i></span>
+                    <span class="checkbox-label">Top Rated Product</span>
+                  </label>
+                  
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="isFeatured" name="isFeatured" <%= product.isFeatured ? 'checked' : '' %>>
+                    <span class="checkbox-icon"><i class="fas fa-check"></i></span>
+                    <span class="checkbox-label">Featured Product</span>
+                  </label>
+                </div>
+                <div class="form-help">Select the appropriate status options for this product</div>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="form-actions">
-          <a href="/admin/products" class="btn btn-secondary">Batal</a>
-          <button type="submit" class="btn btn-primary">Update Produk</button>
-        </div>
-      </form>
+          
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <a href="/admin/products" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Update Product
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+
   </main>
 </div>
+<div class="toast-container"></div>
 
 <style>
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-sm {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+  
+  .current-image-preview {
+    margin-bottom: 15px;
+  }
+  
+  .image-caption {
+    background-color: rgba(76, 110, 245, 0.9);
+    color: white;
+    font-size: 12px;
+    padding: 4px 0;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .existing-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .existing-image {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+  }
+  
+  .existing-image img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .existing-image.marked-for-deletion {
+    opacity: 0.5;
+    border: 2px solid #e53e3e;
+  }
+  
+  .image-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  
+  .existing-image:hover .image-actions {
+    opacity: 1;
+  }
+  
+  .remove-image-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .remove-image-btn:hover {
+    background-color: #c53030;
+  }
+  
+  .no-images {
+    background-color: #f9fafb;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+
   .form-row {
     display: grid;
     grid-template-columns: 1fr;
@@ -486,6 +732,638 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
+
+  // Initialize dropzones
+  initDropzone('main-image-dropzone', 'main-image-preview', 'image', 1);
+    initDropzone('additional-images-dropzone', 'additional-images-preview', 'additionalImages', 5);
+    
+    // Initialize WYSIWYG editor
+    initEditor('detail-editor', 'detailInformation');
+    
+    // Handle existing image deletion
+    document.querySelectorAll('.remove-image-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const index = this.getAttribute('data-index');
+        const checkbox = document.getElementById(`delete-image-${index}`);
+        const imageContainer = document.getElementById(`existing-image-${index}`);
+        
+        if (checkbox && imageContainer) {
+          checkbox.checked = true;
+          imageContainer.classList.add('marked-for-deletion');
+          
+          // Show confirmation toast
+          showToast('Info', 'Image marked for deletion. Save changes to confirm.', 'info');
+          
+          // Add undo button
+          const undoBtn = document.createElement('button');
+          undoBtn.className = 'btn btn-sm btn-info';
+          undoBtn.innerHTML = '<i class="fas fa-undo"></i> Undo';
+          undoBtn.style.marginTop = '10px';
+          undoBtn.style.fontSize = '12px';
+          
+          undoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            checkbox.checked = false;
+            imageContainer.classList.remove('marked-for-deletion');
+            this.remove();
+          });
+          
+          // Add the undo button after the container
+          if (!imageContainer.nextElementSibling || !imageContainer.nextElementSibling.classList.contains('btn-info')) {
+            imageContainer.parentNode.insertBefore(undoBtn, imageContainer.nextSibling);
+          }
+        }
+      });
+    });
+
+  // Toggle form sections
+  const formSections = document.querySelectorAll('.form-section');
+  
+  formSections.forEach(section => {
+    const header = section.querySelector('.form-section-header');
+    if (header) {
+      header.addEventListener('click', () => {
+        section.classList.toggle('collapsed');
+        
+        // Save state to localStorage
+        const sectionId = section.getAttribute('id');
+        if (sectionId) {
+          localStorage.setItem(
+            `form-section-${sectionId}`, 
+            section.classList.contains('collapsed') ? 'collapsed' : 'expanded'
+          );
+        }
+      });
+      
+      // Restore state from localStorage
+      const sectionId = section.getAttribute('id');
+      if (sectionId) {
+        const state = localStorage.getItem(`form-section-${sectionId}`);
+        if (state === 'collapsed') {
+          section.classList.add('collapsed');
+        }
+      }
+    }
+  });
+  
+  // Custom File Input
+  const fileInputs = document.querySelectorAll('.custom-file-input');
+  
+  fileInputs.forEach(input => {
+    const fileLabel = input.nextElementSibling;
+    const defaultText = fileLabel ? fileLabel.textContent : 'Choose file';
+    
+    input.addEventListener('change', function() {
+      if (fileLabel) {
+        fileLabel.textContent = this.files.length > 0 
+          ? (this.files.length > 1 ? `${this.files.length} files selected` : this.files[0].name)
+          : defaultText;
+      }
+      
+      // Handle preview
+      const previewContainer = document.getElementById(this.dataset.preview);
+      if (previewContainer && this.files.length > 0) {
+        previewContainer.innerHTML = '';
+        
+        Array.from(this.files).forEach(file => {
+          // Check if it's an image
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const preview = document.createElement('div');
+              preview.className = 'image-preview-item';
+              preview.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <div class="remove-btn"><i class="fas fa-times"></i></div>
+              `;
+              previewContainer.appendChild(preview);
+              
+              // Remove button functionality
+              preview.querySelector('.remove-btn').addEventListener('click', function() {
+                preview.remove();
+              });
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
+  });
+  
+  // Image preview for existing images
+  setupExistingImagePreviews();
+  
+  // Tags input
+  const tagInput = document.getElementById('tag-input');
+  const tagContainer = document.getElementById('tag-container');
+  
+  if (tagInput && tagContainer) {
+    const hiddenTagsInput = document.getElementById('tags');
+    let tags = hiddenTagsInput && hiddenTagsInput.value ? hiddenTagsInput.value.split(',').map(tag => tag.trim()) : [];
+    
+    // Initial render of tags
+    renderTags();
+    
+    tagInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addTag();
+      }
+    });
+    
+    tagInput.addEventListener('blur', function() {
+      addTag();
+    });
+    
+    function addTag() {
+      const tagText = tagInput.value.trim();
+      if (tagText && !tags.includes(tagText)) {
+        tags.push(tagText);
+        renderTags();
+        updateHiddenInput();
+      }
+      tagInput.value = '';
+    }
+    
+    function renderTags() {
+      const existingTags = tagContainer.querySelectorAll('.tag');
+      existingTags.forEach(tag => tag.remove());
+      
+      tags.forEach(tag => {
+        const tagElement = document.createElement('div');
+        tagElement.className = 'tag';
+        tagElement.innerHTML = `
+          ${tag}
+          <span class="tag-remove" data-tag="${tag}">×</span>
+        `;
+        tagContainer.insertBefore(tagElement, tagInput);
+        
+        tagElement.querySelector('.tag-remove').addEventListener('click', function() {
+          const tagToRemove = this.getAttribute('data-tag');
+          tags = tags.filter(t => t !== tagToRemove);
+          renderTags();
+          updateHiddenInput();
+        });
+      });
+    }
+    
+    function updateHiddenInput() {
+      if (hiddenTagsInput) {
+        hiddenTagsInput.value = tags.join(', ');
+      }
+    }
+  }
+  
+  // Dynamic form elements (specifications, how to use steps)
+  setupDynamicFormElements();
+  
+  // Show toast notifications for form submission results
+  const formSubmitResult = document.getElementById('form-submit-result');
+  if (formSubmitResult) {
+    const result = formSubmitResult.dataset.result;
+    const message = formSubmitResult.dataset.message;
+    
+    if (result && message) {
+      showToast(result === 'success' ? 'Success' : 'Error', message, result);
+    }
+  }
+  
+  // Form submission with validation
+  const form = document.querySelector('.modern-form');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      if (!validateForm(form)) {
+        e.preventDefault();
+        showToast('Error', 'Please check the form for errors', 'error');
+      } else {
+        // Show loading spinner
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `
+            <div class="spinner"></div>
+            Processing...
+          `;
+        }
+      }
+    });
+  }
+});
+
+// Function to validate the form
+function validateForm(form) {
+  let isValid = true;
+  const requiredInputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+  
+  requiredInputs.forEach(input => {
+    if (!input.value.trim()) {
+      isValid = false;
+      input.classList.add('is-invalid');
+      
+      // Show an error message
+      let errorElement = input.nextElementSibling;
+      if (!errorElement || !errorElement.classList.contains('form-error')) {
+        errorElement = document.createElement('div');
+        errorElement.className = 'form-error';
+        errorElement.style.color = '#e53e3e';
+        errorElement.style.fontSize = '12px';
+        errorElement.style.marginTop = '5px';
+        input.parentNode.insertBefore(errorElement, input.nextElementSibling);
+      }
+      errorElement.textContent = 'This field is required';
+    } else {
+      input.classList.remove('is-invalid');
+      
+      // Remove error message if it exists
+      const errorElement = input.nextElementSibling;
+      if (errorElement && errorElement.classList.contains('form-error')) {
+        errorElement.remove();
+      }
+    }
+  });
+  
+  return isValid;
+}
+
+// Function to show toast notifications
+function showToast(title, message, type = 'success') {
+  const toastContainer = document.querySelector('.toast-container');
+  
+  if (!toastContainer) {
+    const container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <div class="toast-icon">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+    <button class="toast-close">&times;</button>
+  `;
+  
+  document.querySelector('.toast-container').appendChild(toast);
+  
+  // Show the toast
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 10);
+  
+  // Auto close after 5 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 5000);
+  
+  // Close button functionality
+  toast.querySelector('.toast-close').addEventListener('click', () => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  });
+}
+
+// Function to handle existing image previews
+function setupExistingImagePreviews() {
+  const existingImages = document.querySelectorAll('.existing-image');
+  
+  existingImages.forEach(image => {
+    const removeCheckbox = image.querySelector('.remove-image-checkbox');
+    const removeBtn = image.querySelector('.remove-image-btn');
+    
+    if (removeBtn && removeCheckbox) {
+      removeBtn.addEventListener('click', function() {
+        removeCheckbox.checked = true;
+        image.classList.add('marked-for-deletion');
+      });
+    }
+  });
+}
+
+// Function to set up dynamic form elements
+function setupDynamicFormElements() {
+  // Specifications
+  setupDynamicList('specifications-container', 'add-spec-btn', createSpecItem);
+  
+  // How to use steps
+  setupDynamicList('howToUse-container', 'add-step-btn', createStepItem);
+}
+
+function setupDynamicList(containerId, addBtnId, createItemFunc) {
+  const container = document.getElementById(containerId);
+  const addBtn = document.getElementById(addBtnId);
+  
+  if (container && addBtn) {
+    addBtn.addEventListener('click', function() {
+      const newItem = createItemFunc();
+      container.appendChild(newItem);
+      updateItemNumbers(container);
+      setupRemoveButtons(container);
+    });
+    
+    // Set up existing items
+    setupRemoveButtons(container);
+    updateItemNumbers(container);
+  }
+}
+
+function setupRemoveButtons(container) {
+  const removeButtons = container.querySelectorAll('.remove-item-btn');
+  
+  removeButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const item = this.closest('.dynamic-list-item');
+      item.remove();
+      updateItemNumbers(container);
+    });
+  });
+}
+
+function updateItemNumbers(container) {
+  const items = container.querySelectorAll('.dynamic-list-item');
+  
+  items.forEach((item, index) => {
+    const numberElement = item.querySelector('.step-number');
+    if (numberElement) {
+      numberElement.textContent = index + 1;
+    }
+  });
+}
+
+function createSpecItem() {
+  const item = document.createElement('div');
+  item.className = 'dynamic-list-item';
+  item.innerHTML = `
+    <div class="inputs">
+      <input type="text" name="specLabel[]" class="form-input" placeholder="Label (e.g., Material)" required>
+      <input type="text" name="specValue[]" class="form-input" placeholder="Value (e.g., Cotton)" required>
+    </div>
+    <button type="button" class="remove-item-btn">
+      <i class="fas fa-times"></i>
+    </button>
+  `;
+  return item;
+}
+
+function createStepItem() {
+  const item = document.createElement('div');
+  item.className = 'dynamic-list-item';
+  item.innerHTML = `
+    <div class="step-number">1</div>
+    <div class="inputs">
+      <input type="text" name="howToUse[]" class="form-input" placeholder="Usage step" required>
+    </div>
+    <button type="button" class="remove-item-btn">
+      <i class="fas fa-times"></i>
+    </button>
+  `;
+  return item;
+}
+
+// Initialize dropzone functionality
+function initDropzone(elementId, previewContainerId, inputName, maxFiles) {
+  const dropzone = document.getElementById(elementId);
+  const previewContainer = document.getElementById(previewContainerId);
+  const hiddenInput = document.createElement('input');
+  hiddenInput.type = 'file';
+  hiddenInput.name = inputName;
+  hiddenInput.multiple = maxFiles > 1;
+  hiddenInput.setAttribute('hidden', 'true');
+  dropzone.appendChild(hiddenInput);
+  
+  let currentFiles = [];
+  
+  dropzone.addEventListener('click', function(e) {
+    if (e.target !== hiddenInput) {
+      hiddenInput.click();
+    }
+  });
+  
+  dropzone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  
+  dropzone.addEventListener('dragleave', function() {
+    dropzone.classList.remove('dragover');
+  });
+  
+  dropzone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    
+    if (e.dataTransfer.files.length > 0) {
+      handleFiles(e.dataTransfer.files);
+    }
+  });
+  
+  hiddenInput.addEventListener('change', function() {
+    if (this.files.length > 0) {
+      handleFiles(this.files);
+    }
+  });
+  
+  function handleFiles(files) {
+    if (maxFiles === 1) {
+      // Single file mode
+      currentFiles = [files[0]];
+      renderPreviews();
+    } else {
+      // Multiple files mode
+      const newFiles = Array.from(files);
+      currentFiles = [...currentFiles, ...newFiles];
+      
+      // Limit to maxFiles
+      if (currentFiles.length > maxFiles) {
+        currentFiles = currentFiles.slice(0, maxFiles);
+        showToast('Warning', `Only ${maxFiles} files allowed`, 'warning');
+      }
+      
+      renderPreviews();
+    }
+  }
+  
+  function renderPreviews() {
+    if (!previewContainer) return;
+    
+    previewContainer.innerHTML = '';
+    
+    currentFiles.forEach((file, index) => {
+      const preview = document.createElement('div');
+      preview.className = 'image-preview-item';
+      
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <div class="remove-btn" data-index="${index}">
+              <i class="fas fa-times"></i>
+            </div>
+            ${index === 0 && maxFiles > 1 ? '<div class="main-badge">Main</div>' : ''}
+          `;
+          
+          if (index === 0) {
+            preview.classList.add('main-image');
+          }
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.innerHTML = `
+          <div class="file-icon">
+            <i class="fas fa-file"></i>
+            <div class="file-name">${file.name}</div>
+          </div>
+          <div class="remove-btn" data-index="${index}">
+            <i class="fas fa-times"></i>
+          </div>
+        `;
+      }
+      
+      previewContainer.appendChild(preview);
+    });
+    
+    // Add remove functionality
+    const removeButtons = previewContainer.querySelectorAll('.remove-btn');
+    removeButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const index = parseInt(this.getAttribute('data-index'));
+        currentFiles.splice(index, 1);
+        renderPreviews();
+      });
+    });
+    
+    // Update the actual file input
+    const dataTransfer = new DataTransfer();
+    currentFiles.forEach(file => {
+      dataTransfer.items.add(file);
+    });
+    hiddenInput.files = dataTransfer.files;
+  }
+}
+
+// WYSIWYG editor initialization
+function initEditor(editorId, targetInputId) {
+  const editor = document.getElementById(editorId);
+  const targetInput = document.getElementById(targetInputId);
+  
+  if (!editor || !targetInput) return;
+  
+  const toolbar = editor.querySelector('.editor-toolbar');
+  const content = editor.querySelector('.editor-content');
+  
+  // Initial content
+  content.innerHTML = targetInput.value;
+  
+  // Update target input on content change
+  content.addEventListener('input', function() {
+    targetInput.value = this.innerHTML;
+  });
+  
+  // Create toolbar buttons
+  const commands = [
+    { icon: 'fa-bold', command: 'bold', arg: null },
+    { icon: 'fa-italic', command: 'italic', arg: null },
+    { icon: 'fa-underline', command: 'underline', arg: null },
+    { icon: 'fa-heading', command: 'formatBlock', arg: '<h2>' },
+    { icon: 'fa-list-ul', command: 'insertUnorderedList', arg: null },
+    { icon: 'fa-list-ol', command: 'insertOrderedList', arg: null },
+    { icon: 'fa-link', command: 'createLink', arg: prompt },
+    { icon: 'fa-image', command: 'insertImage', arg: prompt },
+  ];
+  
+  commands.forEach(cmd => {
+    const button = document.createElement('button');
+    button.className = 'editor-btn';
+    button.type = 'button';
+    button.innerHTML = `<i class="fas ${cmd.icon}"></i>`;
+    
+    button.addEventListener('click', function() {
+      let arg = cmd.arg;
+      
+      if (arg === prompt) {
+        arg = cmd.command === 'createLink' 
+          ? prompt('Enter the URL:') 
+          : prompt('Enter the image URL:');
+        
+        if (!arg) return; // Cancelled
+      }
+      
+      document.execCommand(cmd.command, false, arg);
+      content.focus();
+      
+      // Check state for active styling
+      updateButtonStates();
+    });
+    
+    toolbar.appendChild(button);
+  });
+  
+  // Focus event
+  content.addEventListener('focus', updateButtonStates);
+  content.addEventListener('keyup', updateButtonStates);
+  content.addEventListener('mouseup', updateButtonStates);
+  
+  function updateButtonStates() {
+    const buttons = toolbar.querySelectorAll('.editor-btn');
+    buttons.forEach((btn, index) => {
+      const cmd = commands[index];
+      
+      if (cmd.command === 'formatBlock') {
+        const headingActive = document.queryCommandValue('formatBlock') === 'h2';
+        btn.classList.toggle('active', headingActive);
+      } else if (['createLink', 'insertImage'].includes(cmd.command)) {
+        // These don't have an active state
+        btn.classList.remove('active');
+      } else {
+        const state = document.queryCommandState(cmd.command);
+        btn.classList.toggle('active', state);
+      }
+    });
+  }
+}
+
+// Function to create elegant animated dropdowns
+function initElgantDropdowns() {
+  const dropdowns = document.querySelectorAll('.elegant-dropdown');
+  
+  dropdowns.forEach(dropdown => {
+    const select = dropdown.querySelector('select');
+    const placeholder = dropdown.querySelector('.dropdown-placeholder');
+    
+    if (select && placeholder) {
+      // Initial value
+      if (select.value) {
+        const selectedOption = select.options[select.selectedIndex];
+        placeholder.textContent = selectedOption.textContent;
+        placeholder.classList.add('has-value');
+      }
+      
+      // Change event
+      select.addEventListener('change', function() {
+        if (this.value) {
+          const selectedOption = this.options[this.selectedIndex];
+          placeholder.textContent = selectedOption.textContent;
+          placeholder.classList.add('has-value');
+        } else {
+          placeholder.textContent = placeholder.getAttribute('data-placeholder');
+          placeholder.classList.remove('has-value');
+        }
+      });
+    }
+  });
+  //sampai sini
+
+
     // Specifications
     const specificationsContainer = document.getElementById('specifications-container');
     const addSpecButton = document.getElementById('add-specification');

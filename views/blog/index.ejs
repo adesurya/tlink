@@ -1,0 +1,577 @@
+<!-- views/blog/index.ejs -->
+<div class="blog-container">
+  <div class="blog-header">
+    <h1>Product Reviews Blog</h1>
+    <% if (isAdmin) { %>
+    <div class="admin-actions">
+      <a href="/admin/blog/add" class="add-post-btn">
+        <i class="fas fa-plus"></i> Add New Review
+      </a>
+    </div>
+    <% } %>
+    <% if (typeof currentCategory !== 'undefined' && currentCategory && typeof categories !== 'undefined' && categories) { %>
+      <% const category = categories.find(c => c._id.toString() === currentCategory); %>
+      <% if (category) { %>
+        <div class="current-category">
+          <span>Category: <%= category.name %></span>
+          <a href="/blog" class="clear-filter">Clear Filter</a>
+        </div>
+      <% } %>
+    <% } %>
+    
+    <% if (typeof currentTag !== 'undefined' && currentTag) { %>
+      <div class="current-tag">
+        <span>Tag: <%= currentTag %></span>
+        <a href="/blog" class="clear-filter">Clear Filter</a>
+      </div>
+    <% } %>
+  </div>
+  
+  <div class="blog-content">
+    <div class="posts-container" id="postsContainer">
+      <% if (posts && posts.length > 0) { %>
+        <% posts.forEach(post => { %>
+          <div class="post-card">
+            <a href="/blog/post/<%= post.slug %>" class="post-image">
+              <img src="<%= post.thumbnail %>" alt="<%= post.title %>" loading="lazy">
+              <% if (post.category) { %>
+                <span class="post-category"><%= post.category.name %></span>
+              <% } %>
+            </a>
+            <div class="post-info">
+              <h3 class="post-title">
+                <a href="/blog/post/<%= post.slug %>"><%= post.title %></a>
+              </h3>
+              <p class="post-meta">
+                <span class="post-date"><i class="far fa-calendar-alt"></i> <%= new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+                <span class="post-views"><i class="far fa-eye"></i> <%= post.viewCount.toLocaleString() %></span>
+              </p>
+              <div class="post-summary">
+                <%= post.summary && post.summary.length > 120 ? post.summary.substring(0, 120) + '...' : post.summary %>
+              </div>
+              <a href="/blog/post/<%= post.slug %>" class="read-more">Read Review <i class="fas fa-chevron-right"></i></a>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="no-posts">
+          <p>No blog posts found.</p>
+        </div>
+      <% } %>
+    </div>
+    
+    <!-- Sidebar with categories -->
+    <div class="blog-sidebar">
+      <div class="sidebar-section">
+        <h3>Categories</h3>
+        <ul class="sidebar-categories">
+          <% if (categories && categories.length > 0) { %>
+            <% categories.forEach(category => { %>
+              <li>
+                <a href="/blog?category=<%= category._id %>" class="<%= currentCategory && currentCategory === category._id.toString() ? 'active' : '' %>">
+                  <% if (category.icon) { %>
+                    <i class="<%= category.icon %>"></i>
+                  <% } %>
+                  <%= category.name %>
+                </a>
+              </li>
+            <% }); %>
+          <% } %>
+        </ul>
+      </div>
+      
+      <% if (typeof popularTags !== 'undefined' && popularTags && popularTags.length > 0) { %>
+      <div class="sidebar-section">
+        <h3>Popular Tags</h3>
+        <div class="sidebar-tags">
+          <% popularTags.forEach(tag => { %>
+            <a href="/blog?tag=<%= encodeURIComponent(tag.name) %>" class="tag">
+              <%= tag.name %> (<%= tag.count %>)
+            </a>
+          <% }); %>
+        </div>
+      </div>
+      <% } %>
+      
+      <% if (typeof recentPosts !== 'undefined' && recentPosts && recentPosts.length > 0) { %>
+      <div class="sidebar-section">
+        <h3>Recent Reviews</h3>
+        <div class="sidebar-posts">
+          <% recentPosts.forEach(recentPost => { %>
+            <div class="sidebar-post">
+              <a href="/blog/post/<%= recentPost.slug %>" class="sidebar-post-image">
+                <img src="<%= recentPost.thumbnail %>" alt="<%= recentPost.title %>" loading="lazy">
+              </a>
+              <div class="sidebar-post-info">
+                <h4><a href="/blog/post/<%= recentPost.slug %>"><%= recentPost.title %></a></h4>
+                <div class="sidebar-post-date">
+                  <%= new Date(recentPost.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  
+  <!-- Load more button -->
+  <% if (typeof totalPages !== 'undefined' && typeof currentPage !== 'undefined' && totalPages > 1 && currentPage < totalPages) { %>
+    <div class="load-more-container">
+      <button id="loadMoreBtn" class="load-more-btn" data-page="<%= currentPage + 1 %>">
+        Load More Reviews
+      </button>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  .blog-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 15px;
+  }
+  
+  .blog-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .blog-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .current-category, .current-tag {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f5f7fb;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  
+  .clear-filter {
+    margin-left: 10px;
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+  
+  .blog-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .posts-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .post-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-image {
+    position: relative;
+    display: block;
+    height: 200px;
+    overflow: hidden;
+  }
+  
+  .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  
+  .post-card:hover .post-image img {
+    transform: scale(1.05);
+  }
+  
+  .post-category {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .post-info {
+    padding: 20px;
+  }
+  
+  .post-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+  }
+  
+  .post-title a {
+    color: #333;
+    transition: color 0.2s;
+  }
+  
+  .post-title a:hover {
+    color: var(--primary-color);
+  }
+  
+  .post-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 10px;
+  }
+  
+  .post-meta i {
+    margin-right: 5px;
+  }
+  
+  .post-summary {
+    margin-bottom: 15px;
+    color: #666;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  
+  .read-more {
+    display: inline-block;
+    color: var(--secondary-color);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .read-more i {
+    margin-left: 5px;
+    transition: transform 0.2s;
+  }
+  
+  .read-more:hover {
+    color: var(--primary-color);
+  }
+  
+  .read-more:hover i {
+    transform: translateX(3px);
+  }
+  
+  .blog-sidebar {
+    order: 2;
+  }
+  
+  .sidebar-section {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sidebar-section h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+  }
+  
+  .sidebar-categories {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-categories li {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar-categories a {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #555;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+  
+  .sidebar-categories a:hover {
+    background-color: #f5f7fb;
+  }
+  
+  .sidebar-categories a.active {
+    background-color: #f5f7fb;
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+  
+  .sidebar-categories a i {
+    margin-right: 8px;
+    width: 20px;
+    text-align: center;
+  }
+  
+  .sidebar-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .sidebar-tags .tag {
+    display: inline-block;
+    background-color: #f5f7fb;
+    color: #666;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  
+  .sidebar-tags .tag:hover {
+    background-color: #e9ecf6;
+    color: #333;
+  }
+  
+  .sidebar-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .sidebar-post {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .sidebar-post-image {
+    flex: 0 0 70px;
+    height: 70px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .sidebar-post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .sidebar-post-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-post-info h4 {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0 0 5px 0;
+    line-height: 1.4;
+  }
+  
+  .sidebar-post-info h4 a {
+    color: #333;
+    transition: color 0.2s;
+  }
+  
+  .sidebar-post-info h4 a:hover {
+    color: var(--primary-color);
+  }
+  
+  .sidebar-post-date {
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .no-posts {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .load-more-container {
+    text-align: center;
+    margin-top: 30px;
+  }
+  
+  .load-more-btn {
+    display: inline-block;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+  }
+  
+  .load-more-btn:hover {
+    background-color: #4060e0;
+  }
+  
+  .admin-actions {
+    margin: 15px 0;
+    text-align: center;
+  }
+  
+  .add-post-btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+  }
+  
+  .add-post-btn i {
+    margin-right: 5px;
+  }
+  
+  .add-post-btn:hover {
+    background-color: #d02f50;
+  }
+  
+  @media (min-width: 768px) {
+    .blog-header h1 {
+      font-size: 32px;
+    }
+    
+    .posts-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .blog-content {
+      grid-template-columns: 2fr 1fr;
+    }
+    
+    .blog-sidebar {
+      order: 2;
+    }
+    
+    .posts-container {
+      order: 1;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const postsContainer = document.getElementById('postsContainer');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    
+    if (loadMoreBtn) {
+      let loading = false;
+      
+      loadMoreBtn.addEventListener('click', function() {
+        if (loading) return;
+        
+        loading = true;
+        const nextPage = parseInt(this.dataset.page);
+        
+        // Show loading state
+        loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', nextPage);
+        urlParams.set('format', 'json'); // Request JSON response
+        
+        // Fetch next page of posts
+        fetch(`/blog?${urlParams.toString()}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.posts && data.posts.length > 0) {
+              // Append new posts to container
+              let postsHTML = '';
+              
+              data.posts.forEach(post => {
+                postsHTML += `
+                  <div class="post-card">
+                    <a href="/blog/post/${post.slug}" class="post-image">
+                      <img src="${post.thumbnail}" alt="${post.title}" loading="lazy">
+                      ${post.category ? `<span class="post-category">${post.category.name}</span>` : ''}
+                    </a>
+                    <div class="post-info">
+                      <h3 class="post-title">
+                        <a href="/blog/post/${post.slug}">${post.title}</a>
+                      </h3>
+                      <p class="post-meta">
+                        <span class="post-date"><i class="far fa-calendar-alt"></i> ${new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                        <span class="post-views"><i class="far fa-eye"></i> ${post.viewCount.toLocaleString()}</span>
+                      </p>
+                      <div class="post-summary">
+                        ${post.summary && post.summary.length > 120 ? post.summary.substring(0, 120) + '...' : post.summary}
+                      </div>
+                      <a href="/blog/post/${post.slug}" class="read-more">Read Review <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                  </div>
+                `;
+              });
+              
+              // Append to container
+              postsContainer.insertAdjacentHTML('beforeend', postsHTML);
+              
+              // Update button state
+              loadMoreBtn.dataset.page = nextPage + 1;
+              loadMoreBtn.innerHTML = 'Load More Reviews';
+              
+              // Hide button if reached end
+              if (data.currentPage >= data.totalPages) {
+                loadMoreBtn.style.display = 'none';
+              }
+            } else {
+              // No more posts or error
+              loadMoreBtn.style.display = 'none';
+            }
+            
+            loading = false;
+          })
+          .catch(error => {
+            console.error('Error loading more posts:', error);
+            loadMoreBtn.innerHTML = 'Try Again';
+            loading = false;
+          });
+      });
+      
+      // Implement infinite scroll
+      const handleInfiniteScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        
+        if (scrollTop + clientHeight >= scrollHeight - 500 && !loading && loadMoreBtn.style.display !== 'none') {
+          loadMoreBtn.click();
+        }
+      };
+      
+      // Add scroll event listener
+      window.addEventListener('scroll', handleInfiniteScroll);
+    }
+  });
+</script>

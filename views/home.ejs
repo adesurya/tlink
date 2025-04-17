@@ -190,47 +190,527 @@
   </section>
   
   
-  <section class="tiktok-event">
-    <div class="section-header">
-      <h2>TikTok Event</h2>
-      <a href="/products/tiktok" class="view-all">View All</a>
-    </div>
-    
-    <div class="product-grid small-grid">
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/tiktok1.jpg" alt="TikTok Product 1">
-          <div class="discount-badge">20% ↓</div>
-        </div>
+  <section class="product-reviews-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Latest Product Reviews</h2>
+        <a href="/blog" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
       </div>
       
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/tiktok2.jpg" alt="TikTok Product 2">
-          <div class="discount-badge">20% ↓</div>
-        </div>
-      </div>
-      
-      <div class="product-card small-card">
-        <div class="product-image">
-          <img src="/images/products/tiktok3.jpg" alt="TikTok Product 3">
-          <div class="discount-badge">20% ↓</div>
-        </div>
+      <div class="reviews-grid">
+        <% if (locals.recentBlogPosts && recentBlogPosts.length > 0) { %>
+          <% recentBlogPosts.slice(0, 3).forEach(post => { %>
+            <div class="review-card">
+              <a href="/blog/post/<%= post.slug %>" class="review-image">
+                <img src="<%= post.thumbnail %>" alt="<%= post.title %>" loading="lazy">
+                <% if (post.category) { %>
+                  <span class="review-category"><%= post.category.name %></span>
+                <% } %>
+              </a>
+              <div class="review-info">
+                <h3 class="review-title">
+                  <a href="/blog/post/<%= post.slug %>"><%= post.title %></a>
+                </h3>
+                <p class="review-meta">
+                  <span class="review-date"><i class="far fa-calendar-alt"></i> <%= new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %></span>
+                </p>
+                <div class="review-summary">
+                  <%= post.summary && post.summary.length > 80 ? post.summary.substring(0, 80) + '...' : post.summary %>
+                </div>
+                <a href="/blog/post/<%= post.slug %>" class="read-more">Read Review <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="no-reviews">
+            <p>No product reviews available at the moment.</p>
+          </div>
+        <% } %>
       </div>
     </div>
   </section>
   
-  <section class="campaign-tabs">
-    <div class="tabs-header">
-      <button class="tab-btn active">Mega Campaign</button>
-      <button class="tab-btn">Endorsement</button>
-    </div>
-  </section>
-</div>
 
+</div>
+<style>
+  .product-reviews-section {
+    padding: 60px 0;
+    background-color: #f8f9fa;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .section-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+  }
+  
+  .view-all-link {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.2s;
+  }
+  
+  .view-all-link i {
+    font-size: 14px;
+    margin-left: 5px;
+    transition: transform 0.2s;
+  }
+  
+  .view-all-link:hover {
+    color: #d02f50;
+  }
+  
+  .view-all-link:hover i {
+    transform: translateX(3px);
+  }
+  
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .review-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .review-image {
+    position: relative;
+    display: block;
+    height: 200px;
+    overflow: hidden;
+  }
+  
+  .review-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  
+  .review-card:hover .review-image img {
+    transform: scale(1.05);
+  }
+  
+  .review-category {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .review-info {
+    padding: 20px;
+  }
+  
+  .review-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+  }
+  
+  .review-title a {
+    color: #333;
+    transition: color 0.2s;
+  }
+  
+  .review-title a:hover {
+    color: var(--primary-color);
+  }
+  
+  .review-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 10px;
+  }
+  
+  .review-meta i {
+    margin-right: 5px;
+  }
+  
+  .review-summary {
+    margin-bottom: 15px;
+    color: #666;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  
+  .read-more {
+    display: inline-block;
+    color: var(--secondary-color);
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .read-more i {
+    margin-left: 5px;
+    transition: transform 0.2s;
+  }
+  
+  .read-more:hover {
+    color: var(--primary-color);
+  }
+  
+  .read-more:hover i {
+    transform: translateX(3px);
+  }
+  
+  .no-reviews {
+    grid-column: 1 / -1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  @media (min-width: 768px) {
+    .reviews-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .reviews-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .product-reviews {
+    margin-bottom: 30px;
+  }
+  
+  .reviews-slider-container {
+    position: relative;
+    margin: 0 -5px;
+  }
+  
+  .reviews-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+    padding: 10px 30px;
+    gap: 20px;
+  }
+  
+  .reviews-slider::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+  }
+  
+  .review-slide {
+    flex: 0 0 auto;
+    width: 300px;
+    max-width: 90%;
+  }
+  
+  .review-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .review-image {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+  
+  .review-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  
+  .review-card:hover .review-image img {
+    transform: scale(1.05);
+  }
+  
+  .review-category {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  .review-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  
+  .review-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    height: 44px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  
+  .review-title a {
+    color: #333;
+    transition: color 0.2s;
+  }
+  
+  .review-title a:hover {
+    color: var(--primary-color);
+  }
+  
+  .review-summary {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    flex-grow: 1;
+    height: 58px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  
+  .review-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-top: auto;
+  }
+  
+  .review-date {
+    color: #888;
+  }
+  
+  .review-date i {
+    margin-right: 4px;
+  }
+  
+  .read-more {
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+  }
+  
+  .read-more i {
+    font-size: 8px;
+    margin-left: 3px;
+    transition: transform 0.2s;
+  }
+  
+  .read-more:hover {
+    color: #d02f50;
+  }
+  
+  .read-more:hover i {
+    transform: translateX(3px);
+  }
+  
+  .slider-nav {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+  }
+  
+  .slider-nav:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+  
+  .reviews-prev-btn {
+    left: 10px;
+  }
+  
+  .reviews-next-btn {
+    right: 10px;
+  }
+  
+  .no-reviews-message {
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+  }
+  
+  @media (max-width: 768px) {
+    .review-slide {
+      width: 260px;
+    }
+    
+    .reviews-slider {
+      padding: 10px 20px;
+    }
+    
+    .slider-nav {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .review-slide {
+      width: 220px;
+    }
+    
+    .reviews-slider {
+      padding: 5px 20px;
+    }
+  }
+</style>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-
+    const reviewsSlider = document.getElementById('reviewsSlider');
+    const prevReviewBtn = document.getElementById('prevReview');
+    const nextReviewBtn = document.getElementById('nextReview');
+    
+    if (reviewsSlider && prevReviewBtn && nextReviewBtn) {
+      const scrollAmount = () => {
+        const slide = reviewsSlider.querySelector('.review-slide');
+        if (!slide) return 0;
+        
+        // Get slide width + gap
+        return slide.offsetWidth + 20;
+      };
+      
+      const scrollPrev = () => {
+        reviewsSlider.scrollBy({
+          left: -scrollAmount(),
+          behavior: 'smooth'
+        });
+        
+        setTimeout(updateButtonStates, 350);
+      };
+      
+      const scrollNext = () => {
+        reviewsSlider.scrollBy({
+          left: scrollAmount(),
+          behavior: 'smooth'
+        });
+        
+        setTimeout(updateButtonStates, 350);
+      };
+      
+      const updateButtonStates = () => {
+        const isAtStart = reviewsSlider.scrollLeft < 10;
+        const isAtEnd = reviewsSlider.scrollLeft >= reviewsSlider.scrollWidth - reviewsSlider.clientWidth - 10;
+        
+        prevReviewBtn.style.opacity = isAtStart ? '0.5' : '1';
+        nextReviewBtn.style.opacity = isAtEnd ? '0.5' : '1';
+        
+        prevReviewBtn.disabled = isAtStart;
+        nextReviewBtn.disabled = isAtEnd;
+      };
+      
+      // Touch events for mobile swipe
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      const handleTouchStart = (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      };
+      
+      const handleTouchEnd = (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      };
+      
+      const handleSwipe = () => {
+        const swipeThreshold = 50;
+        const swipeDistance = touchStartX - touchEndX;
+        
+        if (Math.abs(swipeDistance) > swipeThreshold) {
+          if (swipeDistance > 0) {
+            // Swipe left
+            scrollNext();
+          } else {
+            // Swipe right
+            scrollPrev();
+          }
+        }
+      };
+      
+      // Add event listeners
+      prevReviewBtn.addEventListener('click', scrollPrev);
+      nextReviewBtn.addEventListener('click', scrollNext);
+      reviewsSlider.addEventListener('scroll', updateButtonStates);
+      
+      // Touch events
+      reviewsSlider.addEventListener('touchstart', handleTouchStart, { passive: true });
+      reviewsSlider.addEventListener('touchend', handleTouchEnd, { passive: true });
+      
+      // Initial button states
+      updateButtonStates();
+      
+      // Update on resize
+      window.addEventListener('resize', () => {
+        setTimeout(updateButtonStates, 200);
+      });
+    }
+    //sampai
+    
     const track = document.getElementById('carouselTrack');
     const slides = Array.from(track.children);
     const dots = Array.from(document.querySelectorAll('.carousel-dots .dot'));
